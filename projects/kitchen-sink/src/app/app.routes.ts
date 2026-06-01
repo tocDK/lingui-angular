@@ -6,4 +6,5 @@ export const routes: Routes = [
   { path: 'plural', loadComponent: () => import('./features/plural.component') },
   { path: 'select', loadComponent: () => import('./features/select.component') },
   { path: 'context', loadComponent: () => import('./features/context.component') },
+  { path: 'explicit-id', loadComponent: () => import('./features/explicit-id.component') },
 ];

@@ -53,6 +53,33 @@ Open an issue if you have a use-case that isn't covered.
 
 ---
 
+## How it works
+
+`@tocdk/lingui-angular` glues two systems together: Angular's template AST (for finding strings in `.html`) and Lingui's mature extraction/catalog pipeline (for everything downstream of finding them).
+
+```mermaid
+flowchart LR
+    src[".ts + .html<br/>source files"] --> walker
+    walker["lingui-angular extract<br/>(template AST walker)"] --> shims[".lingui-extracted/<br/>TS shim files"]
+    shims --> linguiCli
+    src --> linguiCli
+    linguiCli["lingui extract<br/>(@lingui/cli)"] --> po["src/locales/*.po<br/>(translator edits these)"]
+    po --> compile["lingui compile<br/>--typescript"]
+    compile --> tsModules["src/locales/*.ts<br/>(runtime catalogs)"]
+    tsModules --> runtime["LinguiService<br/>provideLingui()<br/>| t / | tPlural / | tSelect / [t]"]
+
+    style walker fill:#fde68a
+    style shims fill:#fde68a
+    style runtime fill:#fde68a
+```
+
+- **Yellow boxes** are this library's contribution; the rest is Lingui as-is.
+- The shim files are throwaway: they live in `.lingui-extracted/` (gitignored), get consumed by Lingui's CLI, then `lingui-angular clean` deletes them.
+- The PO file is the source of truth that translators edit (in Poedit, Crowdin, Weblate, etc.). Everything downstream regenerates from it.
+- At runtime, only the compiled `.ts` catalogs ship — no PO parsing in the browser.
+
+---
+
 ## Install
 
 ```bash

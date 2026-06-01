@@ -5,4 +5,5 @@ export const routes: Routes = [
   { path: 'params', loadComponent: () => import('./features/params.component') },
   { path: 'plural', loadComponent: () => import('./features/plural.component') },
   { path: 'select', loadComponent: () => import('./features/select.component') },
+  { path: 'context', loadComponent: () => import('./features/context.component') },
 ];

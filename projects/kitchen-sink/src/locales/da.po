@@ -5,3 +5,40 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+
+#. js-lingui-explicit-id
+#: projects/kitchen-sink/src/app/features/cd.component.ts
+msgid "Tick: {n}"
+msgstr "Tik: {n}"
+
+#. js-lingui-explicit-id
+#: projects/kitchen-sink/src/app/features/params.component.ts
+msgid "Hello, {name}!"
+msgstr "Hej, {name}!"
+
+msgid "Hello"
+msgstr "Hej"
+
+msgid "Welcome"
+msgstr "Velkommen"
+
+msgid "About"
+msgstr "Om"
+
+msgid "Hello, {name}"
+msgstr "Hej, {name}"
+
+msgid "Open"
+msgstr "Åbn"
+
+msgid "Server-side rendering demo"
+msgstr "Demo af server-side rendering"
+
+msgid "this is deliberately untranslated"
+msgstr "dette er bevidst uoversat"

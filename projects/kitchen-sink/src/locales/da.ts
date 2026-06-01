@@ -1,1 +1,1 @@
-/*eslint-disable*/import type{Messages}from"@lingui/core";export const messages=JSON.parse("{}")as Messages;
+/*eslint-disable*/import type{Messages}from"@lingui/core";export const messages=JSON.parse("{\"0bF9ll\":[\"dette er bevidst uoversat\"],\"1TNIig\":[\"Åbn\"],\"6jfS51\":[\"Velkommen\"],\"Bw-Nml\":[\"Demo af server-side rendering\"],\"Hello, {name}!\":[\"Hej, \",[\"name\"],\"!\"],\"Tick: {n}\":[\"Tik: \",[\"n\"]],\"pCpfMc\":[\"Hej, \",[\"name\"]],\"uyJsf6\":[\"Om\"],\"uzTaYi\":[\"Hej\"]}")as Messages;

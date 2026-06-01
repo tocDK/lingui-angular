@@ -114,9 +114,16 @@ user clicks "fr"
 
 1. **Signals end-to-end.** `LinguiService.locale: Signal<string>`. Pipes read it.
    No RxJS in the public API. Internal SSR module may use Promises; that's it.
-2. **Pure pipes only.** Reading `locale()` inside a pure pipe's `transform()` is
-   enough — Angular's reactive CD re-runs the pipe on signal change. No
-   `Pipe({ pure: false })` anywhere.
+2. **Pipes are `pure: false` and signal-aware.** Originally we planned `pure: false`
+   on the theory that signal reads inside `transform()` would register with
+   Angular's reactive CD and force re-evaluation on locale change. That's
+   incorrect: Angular's pure-pipe caching uses `Object.is` reference equality
+   on the *pipe arguments only* — signal reads inside `transform()` are
+   invisible to the cache. With a stable-reference message like `'hello'` and
+   no other arg changes, a pure pipe short-circuits forever after the first
+   call. `pure: false` is the only viable shape for the API surface we want;
+   the pipes re-evaluate on every CD cycle, and zoneless + signals make CD
+   cheap enough that this is a non-issue in practice.
 3. **DI-scoped, no globals.** `provideLingui()` creates one `@lingui/core`
    instance per injector and stores it in a token. Two apps in one bundle
    (micro-frontends) just work.
@@ -208,7 +215,7 @@ All standalone, all pure, all signal-aware.
 
 ```typescript
 // | t
-@Pipe({ name: 't', standalone: true, pure: true })
+@Pipe({ name: 't', standalone: true, pure: false })
 class TPipe {
   // values: placeholder map; $context / $id are reserved metadata keys
   transform(
@@ -218,7 +225,7 @@ class TPipe {
 }
 
 // | tPlural: rules
-@Pipe({ name: 'tPlural', standalone: true, pure: true })
+@Pipe({ name: 'tPlural', standalone: true, pure: false })
 class TPluralPipe {
   transform(
     count: number,
@@ -227,7 +234,7 @@ class TPluralPipe {
 }
 
 // | tSelect: rules
-@Pipe({ name: 'tSelect', standalone: true, pure: true })
+@Pipe({ name: 'tSelect', standalone: true, pure: false })
 class TSelectPipe {
   transform(value: string, rules: Record<string, string> & { other: string }): string;
 }

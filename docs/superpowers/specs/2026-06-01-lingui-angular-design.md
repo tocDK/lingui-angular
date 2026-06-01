@@ -203,11 +203,19 @@ export class LinguiUnknownLocaleError extends Error {
 
 ### Tag functions
 
-Re-exported from `@lingui/core/macro` so callers import everything from one place:
-
-```typescript
-export { t, plural, select, defineMessage as msg } from '@lingui/core/macro';
-```
+> **Not re-exported.** The original plan called for re-exporting `t`, `plural`,
+> `select` from `@lingui/core/macro` so callers could `import { t } from '@tocdk/lingui-angular'`.
+> Phase 6 discovered this is incompatible with esbuild bundling: the `@lingui/core/macro`
+> exports are Babel-time macros that only work under a Babel transform. esbuild
+> (Angular CLI's bundler in v20) treats them as runtime imports, which throws
+> at runtime.
+>
+> Consumers should:
+> - **In TypeScript:** use `LinguiService.t()` / `LinguiService.t$()` (signal-reactive),
+>   or use `@lingui/core/macro`'s `t` directly **only if** the consumer has configured
+>   `@lingui/babel-plugin-lingui-macro` in their build (most Angular apps haven't).
+> - **In templates:** use the `| t` / `| tPlural` / `| tSelect` pipes — these are
+>   the pure-runtime equivalents and work without any macro transform.
 
 ### Pipes
 

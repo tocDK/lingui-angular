@@ -1,5 +1,6 @@
 import { Injectable, Signal, inject, signal } from '@angular/core';
 import { I18n, setupI18n } from '@lingui/core';
+import { LinguiUnknownLocaleError } from './errors';
 import type { LinguiConfig } from './lingui-config';
 import { LINGUI_CONFIG } from './provide-lingui';
 
@@ -17,6 +18,9 @@ export class LinguiService {
   readonly i18n: I18n = setupI18n({ locale: this.config.sourceLocale });
 
   async activate(locale: string): Promise<void> {
+    if (!this.locales.includes(locale)) {
+      throw new LinguiUnknownLocaleError(locale);
+    }
     this._loading.set(true);
     try {
       if (!this.loaded.has(locale)) {

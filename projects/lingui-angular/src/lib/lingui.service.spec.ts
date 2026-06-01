@@ -1,6 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
+import { LinguiUnknownLocaleError } from './errors';
 import type { LinguiConfig } from './lingui-config';
 import { LinguiService } from './lingui.service';
 import { provideLingui } from './provide-lingui';
@@ -74,5 +75,18 @@ describe('LinguiService.loading', () => {
 
     await expect(svc.activate('fr')).rejects.toThrow('boom');
     expect(svc.loading()).toBe(false);
+  });
+});
+
+describe('LinguiService unknown locales', () => {
+  it('rejects with LinguiUnknownLocaleError when locale is not configured', async () => {
+    const config = buildConfig();
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), provideLingui(config)],
+    });
+    const svc = TestBed.inject(LinguiService);
+
+    await expect(svc.activate('zh')).rejects.toBeInstanceOf(LinguiUnknownLocaleError);
+    expect(config.loader).not.toHaveBeenCalled();
   });
 });

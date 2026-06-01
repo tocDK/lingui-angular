@@ -15,8 +15,11 @@ export class LinguiService {
   readonly i18n: I18n = setupI18n({ locale: this.config.sourceLocale });
 
   async activate(locale: string): Promise<void> {
-    const catalog = await this.config.loader(locale);
-    this.i18n.load(locale, catalog.messages);
+    if (!this.loaded.has(locale)) {
+      const catalog = await this.config.loader(locale);
+      this.i18n.load(locale, catalog.messages);
+      this.loaded.add(locale);
+    }
     this.i18n.activate(locale);
     this._locale.set(locale);
   }

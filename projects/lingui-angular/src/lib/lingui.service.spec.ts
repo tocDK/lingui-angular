@@ -31,3 +31,17 @@ describe('LinguiService.activate()', () => {
     expect(config.loader).toHaveBeenCalledWith('fr');
   });
 });
+
+describe('LinguiService catalog caching', () => {
+  it('does not call loader twice for the same locale', async () => {
+    const config = buildConfig();
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), provideLingui(config)],
+    });
+    const svc = TestBed.inject(LinguiService);
+
+    await svc.activate('fr');
+    await svc.activate('fr');
+    expect(config.loader).toHaveBeenCalledTimes(1);
+  });
+});

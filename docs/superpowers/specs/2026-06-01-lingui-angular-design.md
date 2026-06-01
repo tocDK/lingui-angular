@@ -332,7 +332,6 @@ src/locales/{en,fr,da}.po
 <p>{{ count | tPlural: { one: '# item', other: '# items' } }}</p>
 <p>{{ status | tSelect: { active: 'Online', away: 'Idle', other: 'Offline' } }}</p>
 <button [t]="'Cancel'"></button>
-<!-- i18n: action verb, not noun -->
 <span>{{ 'Open' | t: { $context: 'verb' } }}</span>
 <span>{{ 'Hello, {name}' | t: { name: userName() } }}</span>
 ```
@@ -349,8 +348,7 @@ void plural(0, { one: '# item', other: '# items' });
 void select('', { active: 'Online', away: 'Idle', other: 'Offline' });
 // @source: src/app/foo.component.html:4:9
 void t`Cancel`;
-// @source: src/app/foo.component.html:6:11
-// context: verb, not noun
+// @source: src/app/foo.component.html:5:11
 void t({ message: 'Open', context: 'verb' });
 // @source: src/app/foo.component.html:7:11
 void t({ message: 'Hello, {name}' });
@@ -407,11 +405,17 @@ strings have two ergonomic options, both extractable:
 
 ### Translator metadata (opt-in)
 
-- `<!-- i18n: explanation for translator -->` — preceding sibling HTML comment
-  becomes a Lingui translator comment.
 - `{{ 'Open' | t: { $context: 'verb' } }}` — `$context` key is `msgctxt`.
 - `{{ 'Welcome' | t: { $id: 'auth.welcome' } }}` — `$id` key is the explicit
   message id (escape hatch for ambiguous source strings).
+
+> **HTML comments (`<!-- i18n: explanation -->`) cannot be extracted in v0.1.**
+> Angular 20's `parseTemplate()` strips HTML comments before producing the AST,
+> so the walker has no access to them. We considered re-parsing the source
+> string separately to recover comments and pair them with sibling AST nodes,
+> but it adds substantial complexity for a feature that `$context` and explicit
+> TS-side comments (`/* i18n: ... */`) already cover. Deferred to v2; track in
+> issue if the need becomes real.
 
 ### ICU in templates
 
@@ -627,8 +631,12 @@ projects/lingui-angular/
   snapshot via `toMatchFileSnapshot`).
 - `invalid.html` → no shim; warnings match `invalid.expected.warnings.json`
   (capture: line, column, reason).
-- `<!-- i18n: comment -->` preceding sibling becomes a Lingui translator comment.
 - `// @source:` location pragmas point to the right `.html:line:col`.
+
+> The `<!-- i18n: comment -->` invariant from earlier drafts is removed:
+> Angular 20's `parseTemplate()` strips HTML comments before the AST, making
+> the feature structurally unimplementable without a separate source pass.
+> See the "Translator metadata" callout in §4 for the deferral rationale.
 
 ### Coverage targets
 

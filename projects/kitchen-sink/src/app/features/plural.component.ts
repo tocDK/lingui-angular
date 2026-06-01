@@ -27,7 +27,8 @@ export default class PluralComponent {
   protected pluralTs = computed(() => {
     const locale = this.lingui.locale();
     const n = this.count();
-    const form = formats.plural([locale], false, n, { one: '# item', other: '# items' } as never);
-    return (form as string).replace(/#/g, String(n));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+    const form: string = formats.plural([locale], false, n, { one: '# item', other: '# items' } as any);
+    return form.replace(/#/g, String(n));
   });
 }

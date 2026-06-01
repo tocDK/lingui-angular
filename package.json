@@ -27,10 +27,10 @@
     "test:lib": "vitest run --project lib",
     "test:extractor": "vitest run --project extractor",
     "test:ssr": "vitest run --project ssr",
-    "lint": "ng lint",
-    "extract": "lingui-angular extract && lingui extract && lingui-angular clean",
-    "extract:watch": "lingui-angular extract --watch & lingui extract --watch",
-    "extract:check": "lingui-angular extract && lingui extract --clean && git diff --exit-code projects/kitchen-sink/src/locales"
+    "lint": "eslint \"projects/**/*.ts\" \"projects/**/*.html\"",
+    "extract": "tsx projects/lingui-angular/extractor/bin.ts extract && lingui extract && tsx projects/lingui-angular/extractor/bin.ts clean",
+    "extract:watch": "tsx projects/lingui-angular/extractor/bin.ts extract --watch & lingui extract --watch",
+    "extract:check": "lingui compile --typescript && git diff --exit-code projects/kitchen-sink/src/locales"
   },
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "^1.22.5",

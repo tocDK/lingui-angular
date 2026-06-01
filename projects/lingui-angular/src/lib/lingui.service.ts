@@ -1,7 +1,7 @@
 import { Injectable, Signal, TransferState, computed, inject, signal } from '@angular/core';
 import { I18n, MessageDescriptor, setupI18n } from '@lingui/core';
 import { LinguiUnknownLocaleError } from './errors';
-import type { LinguiConfig } from './lingui-config';
+// LinguiConfig: consumed via injection token LINGUI_CONFIG at runtime; not imported directly
 import { hydrateCatalog } from './ssr/transfer-state';
 import { DEFAULT_SSR_TRANSFER_KEY } from './ssr/tokens';
 import { LINGUI_CONFIG } from './tokens';

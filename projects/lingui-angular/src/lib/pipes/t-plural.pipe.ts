@@ -18,8 +18,8 @@ export class TPluralPipe implements PipeTransform {
     const locale = this.lingui?.locale() ?? 'en';
     // Cast needed: @lingui/core's PluralOptions types values as LDMLPluralRule but
     // they are actually the translated strings (e.g. '# item').
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const form = formats.plural([locale], false, count, rules as any);
-    return (form as string).replace(/#/g, String(count));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+    const form: string = formats.plural([locale], false, count, rules as any);
+    return form.replace(/#/g, String(count));
   }
 }

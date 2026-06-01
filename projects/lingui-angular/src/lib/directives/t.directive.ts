@@ -1,11 +1,12 @@
 import { Directive, ElementRef, Injector, OnInit, effect, inject, input, runInInjectionContext } from '@angular/core';
 import { LinguiService } from '../lingui.service';
 
+// eslint-disable-next-line @angular-eslint/directive-selector
 @Directive({ selector: '[t]', standalone: true })
 export class TDirective implements OnInit {
   readonly t = input.required<string>();
 
-  private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly lingui = inject(LinguiService);
   private readonly injector = inject(Injector);
 

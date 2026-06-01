@@ -20,3 +20,11 @@ export { TSelectPipe, type SelectRules } from './lib/pipes/t-select.pipe';
 
 // Directives
 export { TDirective } from './lib/directives/t.directive';
+
+// SSR helpers
+export { serializeCatalog, hydrateCatalog } from './lib/ssr/transfer-state';
+export {
+  DEFAULT_SSR_TRANSFER_KEY,
+  LINGUI_SSR_KEY,
+  type LinguiTransferPayload,
+} from './lib/ssr/tokens';

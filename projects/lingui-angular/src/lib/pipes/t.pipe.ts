@@ -20,9 +20,9 @@ export class TPipe implements PipeTransform {
       return this.lingui.i18n._(message);
     }
 
-    const { $context, $id, ...values } = options;
-    return this.lingui.i18n._(
-      { id: $id ?? message, message, context: $context, values },
-    );
+    const { $context: _context, $id, ...values } = options;
+    // Use the string overload: _(id, values, { message })
+    // $context is an extraction hint only; runtime lookup uses $id ?? message as the key.
+    return this.lingui.i18n._($id ?? message, values as Record<string, unknown>, { message });
   }
 }

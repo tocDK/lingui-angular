@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [angular({ tsconfig: './tsconfig.spec.json' })],
   test: {
     globals: true,
+    passWithNoTests: true,
     setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',

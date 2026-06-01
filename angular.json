@@ -34,6 +34,11 @@
             "outputPath": "dist/kitchen-sink",
             "index": "projects/kitchen-sink/src/index.html",
             "browser": "projects/kitchen-sink/src/main.ts",
+            "server": "projects/kitchen-sink/src/main.server.ts",
+            "prerender": false,
+            "ssr": {
+              "entry": "projects/kitchen-sink/server.ts"
+            },
             "polyfills": [],
             "tsConfig": "projects/kitchen-sink/tsconfig.app.json",
             "assets": [],

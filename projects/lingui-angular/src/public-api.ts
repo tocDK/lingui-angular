@@ -10,8 +10,11 @@ export type { LinguiCatalog, LinguiConfig } from './lib/lingui-config';
 export { LINGUI_CONFIG, provideLingui } from './lib/provide-lingui';
 export { LinguiService } from './lib/lingui.service';
 
-// Tag-function re-exports (so callers import everything from one place)
-export { t, plural, select, defineMessage as msg } from '@lingui/core/macro';
+// NOTE: @lingui/core/macro exports (t, plural, select) are Babel-time macros
+// and are intentionally NOT re-exported here — they require Babel plugin
+// transforms that are not available in Angular CLI's esbuild pipeline.
+// Use LinguiService.t() / LinguiService.i18n._() for runtime translation,
+// and | t / | tPlural / | tSelect pipes in templates.
 
 // Pipes
 export { TPipe, type TPipeOptions } from './lib/pipes/t.pipe';

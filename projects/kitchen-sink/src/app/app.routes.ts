@@ -7,4 +7,5 @@ export const routes: Routes = [
   { path: 'select', loadComponent: () => import('./features/select.component') },
   { path: 'context', loadComponent: () => import('./features/context.component') },
   { path: 'explicit-id', loadComponent: () => import('./features/explicit-id.component') },
+  { path: 'lazy', loadComponent: () => import('./features/lazy.component') },
 ];

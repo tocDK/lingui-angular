@@ -97,3 +97,18 @@ describe('walkTemplate — edge cases', () => {
     expect(() => walkTemplate(source, 'bad.html')).toThrow(/Template parse failed/);
   });
 });
+
+describe('walkTemplate — chained pipes', () => {
+  it("silently skips {{ 'X' | t | uppercase }} (outermost is not t)", () => {
+    const result = walkTemplate(`<p>{{ 'X' | t | uppercase }}</p>`, 'chain1.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it('warns on {{ x | uppercase | t }} (outermost t with non-literal exp)', () => {
+    const result = walkTemplate(`<p>{{ x | uppercase | t }}</p>`, 'chain2.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings.length).toBe(1);
+    expect(result.warnings[0].reason).toMatch(/string literal/);
+  });
+});

@@ -78,6 +78,13 @@ export function walkTemplate(source: string, filePath: string): WalkResult {
  * pipe expression's absolute offset using the source file content stored on
  * TmplAstBoundText.sourceSpan.start.file.
  */
+// Policy for chained pipes:
+// - {{ 'X' | t | uppercase }}: outermost is `uppercase`, so we never see `t`.
+//   This silently emits nothing. Chaining post-processing pipes after `t`
+//   is unsupported — use a TS `computed(() => t`X`.toUpperCase())` instead.
+// - {{ x | uppercase | t }}: outermost is `t`, but its `.exp` is a BindingPipe,
+//   not a LiteralPrimitive, so the literal-message guard fires and we warn.
+//   This is the warn path; the message text is generic but the location is precise.
 function handleBoundText(
   node: TmplAstBoundText,
   filePath: string,

@@ -9,6 +9,19 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-_v0.1.0 entry will be added here when the release tag is cut (Phase 9)._
+[Unreleased]: https://github.com/tocDK/lingui-angular/compare/v0.1.0...HEAD
 
-[Unreleased]: https://github.com/tocDK/lingui-angular/compare/HEAD...HEAD
+## [0.1.0] — 2026-06-01
+
+### Added
+- `provideLingui()` + `LinguiService` (signal-based active locale, lazy catalog loading, fallback locales, `LinguiUnknownLocaleError` for unknown locales)
+- `LinguiService.t()` / `t$()` reactive translation methods
+- `| t`, `| tPlural`, `| tSelect` pipes (impure, signal-aware) with `$context` / `$id` metadata support and CLDR-correct plural rules
+- `[t]` signal-input directive (Angular 17+ `input.required()` shape) reacting to both locale and binding changes
+- SSR helpers — `serializeCatalog` / `hydrateCatalog` via Angular `TransferState`; `LinguiService` constructor auto-hydrates from `TransferState` when present (no FOUC)
+- Template extractor at `@tocdk/lingui-angular/extractor`: walks Angular template ASTs via `@angular/compiler`, emits TS shims into `.lingui-extracted/` for Lingui's CLI to ingest. Supports `| t`, `| tPlural`, `| tSelect`, and `[t]`. CLI: `lingui-angular extract|--watch|clean`.
+- Kitchen-sink demo (`projects/kitchen-sink/`) with 10 feature routes covering every documented API, both client and SSR builds
+- GitHub Actions CI: lint, vitest (44 tests, 90%+ coverage), library build, demo client+SSR build, extract-check drift guard
+- MIT license; distributed via github-install (`npm i github:tocDK/lingui-angular`)
+
+[0.1.0]: https://github.com/tocDK/lingui-angular/releases/tag/v0.1.0

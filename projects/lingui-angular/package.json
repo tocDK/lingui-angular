@@ -1,6 +1,6 @@
 {
   "name": "@tocdk/lingui-angular",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "license": "MIT",
   "description": "Angular 20+ bindings for Lingui — write English, extract via AST, ship PO catalogs.",
   "repository": {

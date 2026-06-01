@@ -1,4 +1,4 @@
-import { Injector, effect, provideZonelessChangeDetection, runInInjectionContext } from '@angular/core';
+import { Injector, TransferState, effect, makeStateKey, provideZonelessChangeDetection, runInInjectionContext } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { LinguiUnknownLocaleError } from './errors';
@@ -105,6 +105,33 @@ describe('LinguiService fallback locales', () => {
     await svc.activate('fr-CA');
     expect(svc.locale()).toBe('fr');
     expect(config.loader).toHaveBeenCalledWith('fr');
+  });
+});
+
+describe('LinguiService SSR hydration', () => {
+  it('uses TransferState payload if present, skipping the loader', async () => {
+    const loader = vi.fn();
+    const state = new TransferState();
+    const key = makeStateKey<{ locale: string; messages: Record<string, string> }>('lingui-catalog');
+    state.set(key, { locale: 'fr', messages: { hello: 'Bonjour' } });
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: TransferState, useValue: state },
+        provideLingui({
+          sourceLocale: 'en',
+          locales: ['en', 'fr'],
+          loader,
+        }),
+      ],
+    });
+    const svc = TestBed.inject(LinguiService);
+    // Microtask for the constructor's async hydration path
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(svc.locale()).toBe('fr');
+    expect(loader).not.toHaveBeenCalled();
   });
 });
 

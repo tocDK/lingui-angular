@@ -2,9 +2,9 @@ import { Injectable, Signal, computed, inject, signal } from '@angular/core';
 import { I18n, MessageDescriptor, setupI18n } from '@lingui/core';
 import { LinguiUnknownLocaleError } from './errors';
 import type { LinguiConfig } from './lingui-config';
-import { LINGUI_CONFIG } from './provide-lingui';
+import { LINGUI_CONFIG } from './tokens';
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class LinguiService {
   private readonly config = inject(LINGUI_CONFIG);
   private readonly _locale = signal<string>(this.config.sourceLocale);
@@ -20,9 +20,8 @@ export class LinguiService {
   constructor() {
     const detected = this.config.detectLocale?.() ?? null;
     if (detected && detected !== this.sourceLocale) {
-      void this.activate(detected).catch(() => {
-        // Detection-driven activation must not crash bootstrap; user-driven
-        // activate() calls still throw.
+      void this.activate(detected).catch((err) => {
+        console.warn(`[LinguiService] Auto-detect locale "${detected}" failed:`, err);
       });
     } else {
       this.i18n.activate(this.sourceLocale);
@@ -49,10 +48,9 @@ export class LinguiService {
   }
 
   t(descriptor: MessageDescriptor | string): string {
-    if (typeof descriptor === 'string') {
-      return this.i18n._(descriptor);
-    }
-    return this.i18n._(descriptor);
+    // i18n._ has two overloads (string | MessageDescriptor); cast to satisfy
+    // the TypeScript compiler while keeping a single call site.
+    return this.i18n._(descriptor as MessageDescriptor);
   }
 
   t$(descriptor: MessageDescriptor | string): Signal<string> {

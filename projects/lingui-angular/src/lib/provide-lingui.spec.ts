@@ -1,4 +1,4 @@
-import { provideZonelessChangeDetection } from '@angular/core';
+import { EnvironmentInjector, createEnvironmentInjector, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 import type { LinguiConfig } from './lingui-config';
@@ -40,20 +40,22 @@ describe('provideLingui()', () => {
     expect(svc.locale()).toBe('en');
   });
 
-  it('yields independent service instances across injectors', () => {
+  it('yields independent service instances across simultaneously-live injectors', () => {
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
+    });
+    const parent = TestBed.inject(EnvironmentInjector);
     const cfgA = configWithDetect(null);
     const cfgB = configWithDetect(null);
-    const beds = [
-      TestBed.configureTestingModule({
-        providers: [provideZonelessChangeDetection(), provideLingui(cfgA)],
-      }).inject(LinguiService),
-    ];
-    TestBed.resetTestingModule();
-    beds.push(
-      TestBed.configureTestingModule({
-        providers: [provideZonelessChangeDetection(), provideLingui(cfgB)],
-      }).inject(LinguiService),
-    );
-    expect(beds[0]).not.toBe(beds[1]);
+    const injA = createEnvironmentInjector([provideLingui(cfgA)], parent);
+    const injB = createEnvironmentInjector([provideLingui(cfgB)], parent);
+
+    const svcA = injA.get(LinguiService);
+    const svcB = injB.get(LinguiService);
+
+    expect(svcA).not.toBe(svcB);
+
+    injA.destroy();
+    injB.destroy();
   });
 });

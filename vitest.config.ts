@@ -6,7 +6,6 @@ export default defineConfig({
   test: {
     globals: true,
     passWithNoTests: true,
-    setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
       include: [
@@ -28,6 +27,11 @@ export default defineConfig({
           name: 'lib',
           environment: 'jsdom',
           include: ['projects/lingui-angular/src/lib/**/*.spec.ts'],
+          // setupFiles must be explicit in the child project — the root-level
+          // setupFiles is NOT reliably inherited in Vitest 3 multi-project mode
+          // when the Angular plugin is involved. Using a .js file (not .ts) to
+          // avoid the Angular compiler transform silently swallowing it.
+          setupFiles: ['./vitest.setup.js'],
         },
       },
       {

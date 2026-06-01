@@ -1,0 +1,33 @@
+{
+  "name": "@tocdk/lingui-angular",
+  "version": "0.1.0-dev",
+  "private": false,
+  "license": "MIT",
+  "description": "Angular 20+ bindings for Lingui — write English, extract via AST, ship PO catalogs.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tocDK/lingui-angular.git"
+  },
+  "homepage": "https://github.com/tocDK/lingui-angular",
+  "bugs": "https://github.com/tocDK/lingui-angular/issues",
+  "engines": { "node": ">=22.0.0" },
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve kitchen-sink",
+    "build": "npm run build:lib && npm run build:demo",
+    "build:lib": "ng build lingui-angular --configuration=production",
+    "build:demo": "ng build kitchen-sink --configuration=production",
+    "build:demo:ssr": "ng build kitchen-sink --configuration=production --ssr",
+    "watch:lib": "ng build lingui-angular --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:lib": "vitest run --project lib",
+    "test:extractor": "vitest run --project extractor",
+    "test:ssr": "vitest run --project ssr",
+    "lint": "ng lint",
+    "extract": "lingui-angular extract && lingui extract && lingui-angular clean",
+    "extract:watch": "lingui-angular extract --watch & lingui extract --watch",
+    "extract:check": "lingui-angular extract && lingui extract --clean && git diff --exit-code projects/kitchen-sink/src/locales"
+  }
+}

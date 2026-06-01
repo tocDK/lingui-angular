@@ -17,6 +17,18 @@ export class LinguiService {
   readonly locales: readonly string[] = [...this.config.locales];
   readonly i18n: I18n = setupI18n({ locale: this.config.sourceLocale });
 
+  constructor() {
+    const detected = this.config.detectLocale?.() ?? null;
+    if (detected && detected !== this.sourceLocale) {
+      void this.activate(detected).catch(() => {
+        // Detection-driven activation must not crash bootstrap; user-driven
+        // activate() calls still throw.
+      });
+    } else {
+      this.i18n.activate(this.sourceLocale);
+    }
+  }
+
   async activate(locale: string): Promise<void> {
     const resolved = this.resolveLocale(locale);
     if (resolved === null) {

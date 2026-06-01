@@ -10,14 +10,38 @@
   },
   "homepage": "https://github.com/tocDK/lingui-angular",
   "bugs": "https://github.com/tocDK/lingui-angular/issues",
+  "exports": {
+    ".": {
+      "types": "./dist/lingui-angular/index.d.ts",
+      "default": "./dist/lingui-angular/fesm2022/tocdk-lingui-angular.mjs"
+    },
+    "./extractor": {
+      "types": "./dist/lingui-angular/extractor/index.d.ts",
+      "default": "./dist/lingui-angular/extractor/index.mjs"
+    }
+  },
+  "bin": {
+    "lingui-angular": "./dist/lingui-angular/extractor/bin.mjs"
+  },
+  "files": [
+    "dist/",
+    "scripts/",
+    "projects/lingui-angular/extractor/tsconfig.build.json",
+    "LICENSE",
+    "README.md"
+  ],
   "engines": {
     "node": ">=22.0.0"
   },
+  "dependencies": {
+    "chokidar": "^4.0.3"
+  },
   "scripts": {
     "ng": "ng",
+    "prepare": "if [ -z \"$CI\" ] && [ -d projects/lingui-angular ]; then npm run build:lib; fi",
     "start": "ng serve kitchen-sink",
     "build": "npm run build:lib && npm run build:demo",
-    "build:lib": "ng build lingui-angular --configuration=production",
+    "build:lib": "ng build lingui-angular --configuration=production && node scripts/build-extractor.mjs",
     "build:demo": "ng build kitchen-sink --configuration=production",
     "build:demo:ssr": "ng build kitchen-sink --configuration=production --ssr",
     "watch:lib": "ng build lingui-angular --watch",
@@ -57,7 +81,6 @@
     "@vitest/coverage-v8": "^3.2.6",
     "@vitest/ui": "^3.2.6",
     "angular-eslint": "^20.7.0",
-    "chokidar": "^4.0.3",
     "eslint": "^9.39.4",
     "jsdom": "^25.0.1",
     "ng-packagr": "^20.3.2",

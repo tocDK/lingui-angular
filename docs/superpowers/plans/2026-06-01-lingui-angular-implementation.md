@@ -235,6 +235,7 @@ Expected: creates `node_modules/`, `package-lock.json`, adds `@angular/cli` to `
 ```bash
 npm install --save-dev \
   @angular/animations@^20.0.0 \
+  @angular/build@^20.0.0 \
   @angular/common@^20.0.0 \
   @angular/compiler@^20.0.0 \
   @angular/compiler-cli@^20.0.0 \
@@ -245,11 +246,13 @@ npm install --save-dev \
   @angular/router@^20.0.0 \
   @angular/ssr@^20.0.0 \
   ng-packagr@^20.0.0 \
-  typescript@~5.7.0 \
+  typescript@~5.8.0 \
   rxjs@~7.8.0 \
   zone.js@~0.15.0 \
   tslib@^2.6.0
 ```
+
+> `@angular/build` is needed because Angular 20 moved the `:ng-packagr` and `:application` builders out of `@angular/cli` into a separate package. TypeScript is pinned to `~5.8.0` because Angular 20 + ng-packagr 20 require TS 5.8+; the earlier `~5.7.0` pin causes `ERESOLVE` failures.
 
 > `zone.js` is included because Angular CLI defaults to a zone-based scaffold; we'll remove it / switch to zoneless in Task 1.6.
 
@@ -393,12 +396,11 @@ File: `/Users/toc/git/tivedo/lingui-angular/projects/lingui-angular/ng-package.j
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/lingui-angular",
   "lib": { "entryFile": "src/public-api.ts" },
-  "assets": [
-    { "input": "../..", "glob": "LICENSE", "output": "." },
-    { "input": "../..", "glob": "README.md", "output": "." }
-  ]
+  "assets": []
 }
 ```
+
+> The plan originally referenced `LICENSE` and `README.md` via `"input": "../.."`, but ng-packagr 20 rejects asset paths pointing outside the project root. For v0.1.0 we ship via github-install (consumer gets `LICENSE`/`README.md` from the repo root directly), so leaving `assets` empty is fine. If we later switch to npm publish, wire `LICENSE`/`README.md` via a post-build script in Phase 8.
 
 - [ ] **Step 4: Write `tsconfig.lib.json`**
 
@@ -536,14 +538,14 @@ File: `/Users/toc/git/tivedo/lingui-angular/projects/kitchen-sink/src/main.ts`
 
 ```typescript
 import { bootstrapApplication, provideClientHydration } from '@angular/platform-browser';
-import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(),
   ],
@@ -651,15 +653,17 @@ git commit -m "chore: scaffold kitchen-sink demo project"
 
 ```bash
 npm install --save-dev \
-  vitest@^2.0.0 \
-  @vitest/coverage-v8@^2.0.0 \
-  @vitest/ui@^2.0.0 \
+  vitest@^3.0.0 \
+  @vitest/coverage-v8@^3.0.0 \
+  @vitest/ui@^3.0.0 \
   @analogjs/vite-plugin-angular@^1.10.0 \
   @analogjs/vitest-angular@^1.10.0 \
   jsdom@^25.0.0
 ```
 
-- [ ] **Step 2: Write workspace `vitest.config.ts`**
+> Vitest 3 is required because the `@analogjs/vite-plugin-angular` package is ESM-only and Vitest 2's CJS config bundler can't load it. Vitest 3 also renamed the inline `test.workspace` key to `test.projects`; the config below uses the v3 shape.
+
+- [ ] **Step 2: Write workspace `vitest.config.ts` and `tsconfig.spec.json`**
 
 File: `/Users/toc/git/tivedo/lingui-angular/vitest.config.ts`
 
@@ -668,9 +672,10 @@ import { defineConfig } from 'vitest/config';
 import angular from '@analogjs/vite-plugin-angular';
 
 export default defineConfig({
-  plugins: [angular()],
+  plugins: [angular({ tsconfig: './tsconfig.spec.json' })],
   test: {
     globals: true,
+    passWithNoTests: true,
     setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
@@ -686,7 +691,7 @@ export default defineConfig({
       ],
       thresholds: { lines: 90, branches: 85, functions: 90, statements: 90 },
     },
-    workspace: [
+    projects: [
       {
         extends: true,
         test: {
@@ -715,6 +720,24 @@ export default defineConfig({
   },
 });
 ```
+
+File: `/Users/toc/git/tivedo/lingui-angular/tsconfig.spec.json`
+
+```json
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": ["vitest/globals"]
+  },
+  "include": [
+    "projects/lingui-angular/src/**/*.ts",
+    "projects/lingui-angular/extractor/**/*.ts"
+  ]
+}
+```
+
+> `passWithNoTests: true` is critical — without it, `vitest run` exits 1 when no test files are found, which breaks CI for the empty scaffold. `tsconfig.spec.json` must include the full source trees (not just `.spec.ts`) so the Angular compiler sees the source files that specs import.
 
 - [ ] **Step 3: Write `vitest.setup.ts`**
 
@@ -772,36 +795,36 @@ npm install --save-dev \
   prettier@^3.3.0
 ```
 
-- [ ] **Step 2: Write `.eslintrc.json`**
+- [ ] **Step 2: Write `eslint.config.js` (ESLint 9 flat config)**
 
-File: `/Users/toc/git/tivedo/lingui-angular/.eslintrc.json`
+ESLint 9 dropped support for the legacy `.eslintrc.*` format. Use the flat config format instead.
 
-```json
-{
-  "root": true,
-  "ignorePatterns": ["dist/", "out-tsc/", "node_modules/", "**/.lingui-extracted/"],
-  "overrides": [
-    {
-      "files": ["*.ts"],
-      "parser": "@typescript-eslint/parser",
-      "parserOptions": { "project": ["tsconfig.base.json"] },
-      "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended-type-checked",
-        "plugin:@angular-eslint/recommended",
-        "plugin:@angular-eslint/template/process-inline-templates"
-      ],
-      "rules": {
-        "@angular-eslint/directive-selector": ["error", { "type": "attribute", "prefix": "t", "style": "camelCase" }],
-        "@angular-eslint/component-selector": ["error", { "type": "element", "prefix": ["lib", "app"], "style": "kebab-case" }]
-      }
+File: `/Users/toc/git/tivedo/lingui-angular/eslint.config.js`
+
+```javascript
+const tseslint = require('typescript-eslint');
+const angular = require('angular-eslint');
+
+module.exports = tseslint.config(
+  { ignores: ['dist/', 'out-tsc/', 'node_modules/', '**/.lingui-extracted/'] },
+  {
+    files: ['**/*.ts'],
+    extends: [
+      ...tseslint.configs.recommended,
+      ...tseslint.configs.stylistic,
+      ...angular.configs.tsRecommended,
+    ],
+    processor: angular.processInlineTemplates,
+    rules: {
+      '@angular-eslint/directive-selector': ['error', { type: 'attribute', prefix: 't', style: 'camelCase' }],
+      '@angular-eslint/component-selector': ['error', { type: 'element', prefix: ['lib', 'app'], style: 'kebab-case' }],
     },
-    {
-      "files": ["*.html"],
-      "extends": ["plugin:@angular-eslint/template/recommended"]
-    }
-  ]
-}
+  },
+  {
+    files: ['**/*.html'],
+    extends: [...angular.configs.templateRecommended],
+  },
+);
 ```
 
 - [ ] **Step 3: Write `.prettierrc`**
@@ -3331,7 +3354,7 @@ File: `/Users/toc/git/tivedo/lingui-angular/projects/kitchen-sink/src/main.ts`
 
 ```typescript
 import { bootstrapApplication, provideClientHydration } from '@angular/platform-browser';
-import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideLingui } from '@tocdk/lingui-angular';
 import { AppComponent } from './app/app.component';
@@ -3339,7 +3362,7 @@ import { routes } from './app/app.routes';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     provideRouter(routes),
     provideClientHydration(),
     provideLingui({

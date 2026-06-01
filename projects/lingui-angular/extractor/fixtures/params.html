@@ -1,0 +1,4 @@
+<p>{{ 'Hello, {name}' | t: { name: user.name() } }}</p>
+<p>{{ 'Open' | t: { $context: 'verb' } }}</p>
+<p>{{ 'Welcome' | t: { $id: 'auth.welcome' } }}</p>
+<p>{{ 'Open, {name}' | t: { name: user.name(), $context: 'verb' } }}</p>

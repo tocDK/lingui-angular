@@ -14,3 +14,13 @@ describe('walkTemplate — basic.html', () => {
     expect(result.warnings).toEqual([]);
   });
 });
+
+describe('walkTemplate — params.html', () => {
+  it('extracts $context / $id; ignores placeholder values', () => {
+    const source = readFileSync(join(fixturesDir, 'params.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'params.expected.ts'), 'utf8');
+    const result = walkTemplate(source, 'params.html');
+    expect(result.emit()).toBe(expected);
+    expect(result.warnings).toEqual([]);
+  });
+});

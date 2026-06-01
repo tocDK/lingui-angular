@@ -73,9 +73,10 @@ export function walkTemplate(source: string, filePath: string): WalkResult {
  * wrapping an Interpolation. The Interpolation.expressions array contains the
  * expressions between `{{` and `}}`, which may be BindingPipe nodes.
  *
- * Crucially, BindingPipe.sourceSpan.start is a raw character-offset object (no
- * .line/.col), not a ParseSourcePosition. We use TmplAstBoundText.sourceSpan.start
- * (which does have .line/.col) to report the pipe's position.
+ * In Angular 20, BindingPipe.sourceSpan is a plain {start, end} char-offset pair —
+ * not a ParseSourcePosition with .line/.col. We resolve line/col by converting the
+ * pipe expression's absolute offset using the source file content stored on
+ * TmplAstBoundText.sourceSpan.start.file.
  */
 function handleBoundText(
   node: TmplAstBoundText,
@@ -86,14 +87,16 @@ function handleBoundText(
   const ast = (node.value as ASTWithSource).ast;
   if (!(ast instanceof Interpolation)) return;
 
+  // ParseLocation carries the full file content so we can convert offsets to line/col.
+  const fileContent: string | undefined = (node.sourceSpan.start as { file?: { content: string } }).file?.content;
+
   for (const expr of ast.expressions) {
     if (!(expr instanceof BindingPipe)) continue;
     if (expr.name !== 't' && expr.name !== 'tPlural' && expr.name !== 'tSelect') continue;
 
-    // Use the TmplAstBoundText sourceSpan for position — BindingPipe.sourceSpan
-    // only carries raw offsets in Angular 20, not line/col.
-    const line = node.sourceSpan.start.line + 1;
-    const column = node.sourceSpan.start.col + 1;
+    // Use the absolute offset of the pipe expression (the string literal / count /
+    // value being piped) as the reported position, falling back to the {{ position.
+    const { line, column } = resolvePosition(expr.exp.sourceSpan.start as number, fileContent, node.sourceSpan.start);
 
     switch (expr.name) {
       case 't':
@@ -107,6 +110,24 @@ function handleBoundText(
         break;
     }
   }
+}
+
+/**
+ * Convert an absolute character offset to 1-indexed line/col using the template
+ * source. Falls back to the TmplAstBoundText ParseLocation when file content is
+ * unavailable.
+ */
+function resolvePosition(
+  absOffset: unknown,
+  fileContent: string | undefined,
+  fallback: { line: number; col: number },
+): { line: number; column: number } {
+  if (typeof absOffset === 'number' && fileContent !== undefined) {
+    const before = fileContent.substring(0, absOffset);
+    const lines = before.split('\n');
+    return { line: lines.length, column: lines[lines.length - 1].length + 1 };
+  }
+  return { line: fallback.line + 1, column: fallback.col + 1 };
 }
 
 function handleTPipe(

@@ -54,3 +54,46 @@ describe('walkTemplate — invalid.html', () => {
     ]);
   });
 });
+
+describe('walkTemplate — edge cases', () => {
+  it('warns when tPlural rules arg is not a literal object', () => {
+    const source = `<p>{{ count | tPlural: someVar }}</p>\n`;
+    const result = walkTemplate(source, 'test.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings[0]?.reason).toBe('tPlural needs a literal rules object');
+  });
+
+  it('warns when tPlural is missing the "other" rule', () => {
+    const source = `<p>{{ count | tPlural: { one: '# item' } }}</p>\n`;
+    const result = walkTemplate(source, 'test.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings[0]?.reason).toBe('tPlural requires an "other" rule');
+  });
+
+  it('warns when tSelect rules arg is not a literal object', () => {
+    const source = `<p>{{ status | tSelect: someVar }}</p>\n`;
+    const result = walkTemplate(source, 'test.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings[0]?.reason).toBe('tSelect needs a literal rules object');
+  });
+
+  it('warns when $context is a non-literal expression', () => {
+    const source = `<p>{{ 'Open' | t: { $context: someVar } }}</p>\n`;
+    const result = walkTemplate(source, 'test.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings[0]?.reason).toBe('t pipe options arg has non-literal entries');
+  });
+
+  it('handles templates with no translatable content', () => {
+    const source = `<div><p>plain text</p></div>\n`;
+    const result = walkTemplate(source, 'test.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings).toEqual([]);
+    expect(result.emit()).toBe(`import { plural, select, t } from '@lingui/core/macro';\n`);
+  });
+
+  it('throws on malformed template with parse errors', () => {
+    const source = `<unclosed`;
+    expect(() => walkTemplate(source, 'bad.html')).toThrow(/Template parse failed/);
+  });
+});

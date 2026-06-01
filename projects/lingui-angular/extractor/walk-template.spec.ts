@@ -24,3 +24,19 @@ describe('walkTemplate — params.html', () => {
     expect(result.warnings).toEqual([]);
   });
 });
+
+describe('walkTemplate — plural.html', () => {
+  it('extracts | tPlural rules', () => {
+    const source = readFileSync(join(fixturesDir, 'plural.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'plural.expected.ts'), 'utf8');
+    expect(walkTemplate(source, 'plural.html').emit()).toBe(expected);
+  });
+});
+
+describe('walkTemplate — select.html', () => {
+  it('extracts | tSelect rules', () => {
+    const source = readFileSync(join(fixturesDir, 'select.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'select.expected.ts'), 'utf8');
+    expect(walkTemplate(source, 'select.html').emit()).toBe(expected);
+  });
+});

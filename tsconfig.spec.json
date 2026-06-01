@@ -5,7 +5,7 @@
     "types": ["vitest/globals"]
   },
   "include": [
-    "projects/lingui-angular/src/lib/**/*.spec.ts",
-    "projects/lingui-angular/extractor/**/*.spec.ts"
+    "projects/lingui-angular/src/**/*.ts",
+    "projects/lingui-angular/extractor/**/*.ts"
   ]
 }

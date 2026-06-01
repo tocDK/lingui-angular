@@ -1,4 +1,4 @@
-import { provideZonelessChangeDetection } from '@angular/core';
+import { Injector, effect, provideZonelessChangeDetection, runInInjectionContext } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { LinguiUnknownLocaleError } from './errors';
@@ -105,5 +105,29 @@ describe('LinguiService fallback locales', () => {
     await svc.activate('fr-CA');
     expect(svc.locale()).toBe('fr');
     expect(config.loader).toHaveBeenCalledWith('fr');
+  });
+});
+
+describe('LinguiService.t$()', () => {
+  it('re-emits when locale changes', async () => {
+    const config = buildConfig();
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), provideLingui(config)],
+    });
+    const svc = TestBed.inject(LinguiService);
+    const injector = TestBed.inject(Injector);
+    const observed: string[] = [];
+
+    const stop = runInInjectionContext(injector, () =>
+      effect(() => observed.push(svc.t$('hello')())),
+    );
+
+    // initial pulls source-locale value before any catalog load
+    TestBed.flushEffects();
+    await svc.activate('fr');
+    TestBed.flushEffects();
+
+    expect(observed[observed.length - 1]).toBe('Bonjour');
+    stop.destroy();
   });
 });

@@ -1,5 +1,5 @@
-import { Injectable, Signal, inject, signal } from '@angular/core';
-import { I18n, setupI18n } from '@lingui/core';
+import { Injectable, Signal, computed, inject, signal } from '@angular/core';
+import { I18n, MessageDescriptor, setupI18n } from '@lingui/core';
 import { LinguiUnknownLocaleError } from './errors';
 import type { LinguiConfig } from './lingui-config';
 import { LINGUI_CONFIG } from './provide-lingui';
@@ -34,6 +34,22 @@ export class LinguiService {
     } finally {
       this._loading.set(false);
     }
+  }
+
+  t(descriptor: MessageDescriptor | string): string {
+    if (typeof descriptor === 'string') {
+      return this.i18n._(descriptor);
+    }
+    return this.i18n._(descriptor);
+  }
+
+  t$(descriptor: MessageDescriptor | string): Signal<string> {
+    return computed(() => {
+      // Read locale signal to register reactive dependency —
+      // pure computed re-runs whenever locale changes.
+      this._locale();
+      return this.t(descriptor);
+    });
   }
 
   private resolveLocale(locale: string): string | null {

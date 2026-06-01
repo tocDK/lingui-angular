@@ -1,5 +1,5 @@
 import { mkdirSync, readFileSync, rmSync, writeFileSync, globSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { walkTemplate, type ExtractionWarning } from './walk-template';
 
 export interface ExtractOptions {
@@ -34,5 +34,9 @@ export function extractTemplates(opts: ExtractOptions): ExtractResult {
 }
 
 export function cleanExtracted(cwd: string, outDir: string): void {
-  rmSync(join(cwd, outDir), { recursive: true, force: true });
+  const target = resolve(cwd, outDir);
+  if (!target.startsWith(resolve(cwd) + '/')) {
+    throw new Error(`cleanExtracted: outDir resolves outside cwd: ${outDir}`);
+  }
+  rmSync(target, { recursive: true, force: true });
 }

@@ -72,7 +72,10 @@ describe('TPipe — placeholders + metadata', () => {
       .toBe('Hello, Alice');
   });
 
-  it('passes $context through as msgctxt id prefix', async () => {
+  it('$context is stripped at runtime — it is an extraction-only hint', async () => {
+    // $context is an extraction hint for the build-time PO catalog — at runtime
+    // the pipe ignores it and looks up the bare msgid. This test asserts the
+    // runtime behavior; the extraction behavior is tested in the extractor specs.
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),

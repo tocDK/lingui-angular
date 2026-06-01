@@ -51,6 +51,20 @@ describe('TSelectPipe', () => {
     expect(fixture.debugElement.query(By.css('[data-test]')).nativeElement.textContent).toBe('Offline');
   });
 
+  it('falls through to "other" for prototype property names', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({ sourceLocale: 'en', locales: ['en'], loader: async () => ({ messages: {} }) }),
+      ],
+    });
+    const fixture = TestBed.createComponent(HostComponent);
+    await TestBed.inject(LinguiService).activate('en');
+    fixture.componentInstance.status = 'constructor';
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('[data-test]')).nativeElement.textContent).toBe('Offline');
+  });
+
   it('throws when "other" is missing', () => {
     TestBed.configureTestingModule({
       providers: [

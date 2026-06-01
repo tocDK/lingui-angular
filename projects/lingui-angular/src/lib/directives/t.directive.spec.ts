@@ -1,4 +1,4 @@
-import { Component, provideZonelessChangeDetection } from '@angular/core';
+import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { describe, expect, it } from 'vitest';
@@ -12,6 +12,15 @@ import { TDirective } from './t.directive';
   template: `<button [t]="'Cancel'" data-test></button>`,
 })
 class HostComponent {}
+
+@Component({
+  standalone: true,
+  imports: [TDirective],
+  template: `<button [t]="key()" data-test></button>`,
+})
+class HostWithDynamicKey {
+  readonly key = signal('Cancel');
+}
 
 describe('TDirective', () => {
   it('writes translated text into the host element textContent', async () => {
@@ -38,5 +47,26 @@ describe('TDirective', () => {
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('[data-test]')).nativeElement.textContent.trim())
       .toBe('Annuler');
+  });
+
+  it('re-renders when the [t] binding changes', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({
+          sourceLocale: 'en',
+          locales: ['en'],
+          loader: async () => ({ messages: { Cancel: 'Cancel', Confirm: 'Confirm' } }),
+        }),
+      ],
+    });
+    const fixture = TestBed.createComponent(HostWithDynamicKey);
+    await TestBed.inject(LinguiService).activate('en');
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('[data-test]')).nativeElement.textContent.trim()).toBe('Cancel');
+
+    fixture.componentInstance.key.set('Confirm');
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('[data-test]')).nativeElement.textContent.trim()).toBe('Confirm');
   });
 });

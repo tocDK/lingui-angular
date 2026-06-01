@@ -13,6 +13,7 @@ export class TSelectPipe implements PipeTransform {
     }
     // Read locale to register reactive dep so the pipe re-runs on locale change
     this.lingui?.locale();
-    return rules[value] ?? rules.other;
+    const match = Object.prototype.hasOwnProperty.call(rules, value) ? rules[value] : undefined;
+    return match ?? rules.other;
   }
 }

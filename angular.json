@@ -21,6 +21,44 @@
           "defaultConfiguration": "production"
         }
       }
+    },
+    "kitchen-sink": {
+      "projectType": "application",
+      "root": "projects/kitchen-sink",
+      "sourceRoot": "projects/kitchen-sink/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "outputPath": "dist/kitchen-sink",
+            "index": "projects/kitchen-sink/src/index.html",
+            "browser": "projects/kitchen-sink/src/main.ts",
+            "polyfills": [],
+            "tsConfig": "projects/kitchen-sink/tsconfig.app.json",
+            "assets": [],
+            "styles": ["projects/kitchen-sink/src/styles.css"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                { "type": "initial",  "maximumWarning": "200kb", "maximumError": "500kb" },
+                { "type": "anyComponentStyle", "maximumWarning": "8kb", "maximumError": "16kb" }
+              ]
+            },
+            "development": { "optimization": false, "extractLicenses": false, "sourceMap": true }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": { "buildTarget": "kitchen-sink:build:production" },
+            "development": { "buildTarget": "kitchen-sink:build:development" }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
     }
   }
 }

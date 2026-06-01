@@ -1,0 +1,6 @@
+{
+  "name": "@tocdk/lingui-angular/extractor",
+  "ngPackage": {
+    "lib": { "entryFile": "index.ts" }
+  }
+}

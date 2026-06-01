@@ -1,22 +1,49 @@
 # @tocdk/lingui-angular
 
+[![CI](https://github.com/tocDK/lingui-angular/actions/workflows/ci.yml/badge.svg)](https://github.com/tocDK/lingui-angular/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/tocDK/lingui-angular?label=release)](https://github.com/tocDK/lingui-angular/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Angular 20+](https://img.shields.io/badge/angular-20%2B-dd0031.svg)](https://angular.dev/)
+
 Angular 20+ bindings for [Lingui](https://lingui.dev/) — write English in source, extract via AST, ship PO catalogs. Signal-only, zoneless, standalone-first.
 
 ---
 
 ## Contents
 
-1. [What & why](#what--why)
-2. [Install](#install)
-3. [60-second quickstart](#60-second-quickstart)
-4. [Templates](#templates)
-5. [Plural & select](#plural--select)
-6. [Extraction setup](#extraction-setup)
-7. [SSR](#ssr)
-8. [Kitchen-sink reference](#kitchen-sink-reference)
-9. [Comparison](#comparison)
-10. [Contributing](#contributing)
-11. [License](#license)
+1. [Status & roadmap](#status--roadmap)
+2. [What & why](#what--why)
+3. [How it works](#how-it-works)
+4. [Install](#install)
+5. [60-second quickstart](#60-second-quickstart)
+6. [Templates](#templates)
+7. [Plural & select](#plural--select)
+8. [Extraction setup](#extraction-setup)
+9. [SSR](#ssr)
+10. [Troubleshooting & FAQ](#troubleshooting--faq)
+11. [Reference](#reference)
+12. [Kitchen-sink reference](#kitchen-sink-reference)
+13. [Comparison](#comparison)
+14. [Contributing](#contributing)
+15. [License](#license)
+
+---
+
+## Status & roadmap
+
+**Current version: `v0.1.0`** — first usable cut. Distributed via github-install only (not on npm).
+
+> **Pre-1.0.** The public API may evolve based on dogfooding feedback. Breaking changes will land on minor version bumps until `v1.0.0`. Use `npm i github:tocDK/lingui-angular#v0.1.0` to pin.
+
+### Roadmap
+
+| Version | Scope |
+|---|---|
+| `v0.1.0` (released) | Runtime, extractor, kitchen-sink demo, CI, MIT license |
+| `v0.2.0` (planned) | GitHub Pages deployment of the kitchen-sink, HTML-comment extraction (`<!-- i18n: ... -->`), Playwright e2e against the demo |
+| `v1.0.0` (criteria) | First external user OR 4 weeks of dogfooding without API change; npm publish as `@tocdk/lingui-angular` becomes an option |
+
+Open an issue if you have a use-case that isn't covered.
 
 ---
 

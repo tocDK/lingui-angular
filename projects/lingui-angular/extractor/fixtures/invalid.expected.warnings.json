@@ -1,0 +1,5 @@
+[
+  { "file": "invalid.html", "reason": "t pipe needs a string literal message", "line": 1, "column": 7 },
+  { "file": "invalid.html", "reason": "t pipe needs a string literal message", "line": 2, "column": 7 },
+  { "file": "invalid.html", "reason": "[t] needs a string literal", "line": 3, "column": 9 }
+]

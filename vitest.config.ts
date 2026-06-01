@@ -17,6 +17,7 @@ export default defineConfig({
         '**/index.ts',
         '**/public-api.ts',
         'projects/lingui-angular/extractor/fixtures/**',
+        'projects/lingui-angular/extractor/bin.ts',
       ],
       thresholds: { lines: 90, branches: 85, functions: 90, statements: 90 },
     },

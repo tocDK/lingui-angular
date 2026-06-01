@@ -336,6 +336,50 @@ The client-side `LinguiService` constructor automatically calls `hydrateCatalog`
 
 ---
 
+## Troubleshooting & FAQ
+
+### Why won't my `.po` files import directly?
+
+Angular CLI's esbuild bundler does not recognize `.po` files. You have two options:
+1. **Pre-compile at build time** (recommended): run `npx lingui compile --typescript` before `ng build` and have your loader `import('./locales/<locale>')` resolve to the generated `.ts` modules. Wire it into `prebuild` in `package.json` for safety.
+2. **Use a custom Webpack/esbuild loader**: write a small plugin to transform `.po` into JSON at build time. More flexible but more code to maintain.
+
+### `t is not a function` at runtime when I use `import { t } from '@tocdk/lingui-angular'`
+
+The `t` tagged-template-literal export was intentionally removed — `@lingui/core/macro` is a Babel-time transform that esbuild (Angular CLI's bundler) cannot execute. Use one of:
+- `LinguiService.t('Hello')` — one-shot string translation
+- `LinguiService.t$('Hello')` — reactive `Signal<string>`
+- `{{ 'Hello' | t }}` in templates (the pipe form)
+
+### `npm install github:tocDK/lingui-angular` is slow
+
+First install runs `prepare` which builds the library (~30 s — ng-packagr + extractor compile). Subsequent installs that reuse a cached `node_modules` are instant. CI installs are slower because of cold cache.
+
+### Missing translations don't fall back
+
+`@lingui/core` returns the source string when a key isn't in the catalog (this is built-in Lingui behavior, not something we override). Check the browser console — Lingui logs a warning for each missing key once. If you're seeing the *key* literal instead of the source string, double-check your loader returned `{ messages }` with the right shape.
+
+### Two apps in one bundle — do they share locale state?
+
+No. `LinguiService` is scoped to the environment injector that `provideLingui()` was called in. Each `EnvironmentInjector` (including each micro-frontend) gets its own service instance with its own active locale. There's a regression test for this in `provide-lingui.spec.ts`.
+
+### How do I add a new locale?
+
+1. Add the locale code to `locales: [...]` in `provideLingui()` config
+2. Add the locale code to `locales: [...]` in `lingui.config.ts`
+3. Run `npm run extract` — Lingui creates an empty `.po` for the new locale
+4. Translate the strings
+5. Run `npx lingui compile --typescript` to regenerate `.ts` modules
+6. Update your loader's `switch` to import the new locale
+
+### How do I add a translator comment for context?
+
+For templates: use `{{ 'Open' | t: { $context: 'verb' } }}` — `$context` is extraction-only and gets baked into the PO as `msgctxt`. For TypeScript, use `LinguiService.t({ message: 'Open', context: 'verb' })` (note: at runtime `context` is currently ignored — extraction-only — but the catalog will key-with-context correctly).
+
+HTML comments like `<!-- i18n: explanation -->` are **not extracted** in v0.1 — Angular 20's `parseTemplate()` strips comments before producing the AST. Tracked as a v0.2 follow-up.
+
+---
+
 ## Kitchen-sink reference
 
 The [`projects/kitchen-sink/`](projects/kitchen-sink/) directory in this repo contains a full Angular SSR application covering every documented API:

@@ -651,19 +651,52 @@ projects/lingui-angular/
 
 ---
 
-## 7. Packaging, CI, publish, license
+## 7. Packaging, CI, distribution, license
+
+### Distribution: github-install, no npm publish
+
+**The package is not published to npm.** Consumers install from the GitHub
+repo directly:
+
+```bash
+# latest from main
+npm i github:tocDK/lingui-angular
+
+# pinned to a release tag
+npm i github:tocDK/lingui-angular#v0.1.0
+```
+
+Trade-offs of this choice (made deliberately):
+
+- ✅ No `@tocdk` npm scope to register, no `NPM_TOKEN` to manage, no publish workflow.
+- ✅ Consumers can install any commit, branch, or tag — easy for dogfooding.
+- ⚠ Each install builds the library locally via a `prepare` script (~30s, one-time).
+- ⚠ Consumers pull in our `devDependencies` (ng-packagr, typescript, etc.) — ~hundreds of MB of nested deps. Acceptable for a personal/internal-leaning library; would change if we later open to wide adoption.
 
 ### Build: ng-packagr
 
 The only sane choice for an Angular library. One workspace, two entry points
 (root runtime, `./extractor` subpath).
 
+The **workspace-root `package.json`** doubles as the library's package.json
+(since `npm i github:...` installs the repo root). A `prepare` script builds
+the library on install; `exports` points into the built `dist/` tree.
+
 ```json
-// projects/lingui-angular/package.json (the published one)
+// /package.json  (workspace root + library entry)
 {
   "name": "@tocdk/lingui-angular",
   "version": "0.1.0",
   "license": "MIT",
+  "scripts": {
+    "prepare": "ng build lingui-angular --configuration=production",
+    "...": "..."
+  },
+  "exports": {
+    ".":           { "types": "./dist/lingui-angular/index.d.ts",           "default": "./dist/lingui-angular/fesm2022/tocdk-lingui-angular.mjs" },
+    "./extractor": { "types": "./dist/lingui-angular/extractor/index.d.ts", "default": "./dist/lingui-angular/extractor/index.mjs" }
+  },
+  "bin": { "lingui-angular": "./dist/lingui-angular/extractor/bin.mjs" },
   "peerDependencies": {
     "@angular/core": "^20.0.0",
     "@angular/common": "^20.0.0",
@@ -672,17 +705,15 @@ The only sane choice for an Angular library. One workspace, two entry points
   "peerDependenciesMeta": {
     "@angular/compiler": { "optional": true },
     "@lingui/cli":       { "optional": true }
-  },
-  "exports": {
-    ".":           { "types": "./index.d.ts",          "default": "./fesm2022/tocdk-lingui-angular.mjs" },
-    "./extractor": { "types": "./extractor/index.d.ts","default": "./extractor/index.mjs" }
-  },
-  "bin": { "lingui-angular": "./extractor/bin.mjs" }
+  }
 }
 ```
 
 The `./extractor` subpath needs `@angular/compiler` and `@lingui/cli` at
 build-time only; optional-peer keeps them out of the runtime install footprint.
+
+> npm DOES install `devDependencies` when running `prepare` on a git install
+> (per the npm install lifecycle), so ng-packagr et al. will be available.
 
 ### Workspace `tsconfig.json` paths
 
@@ -740,15 +771,17 @@ jobs:
 
 ```yaml
 jobs:
-  publish:
+  release:
     - npm ci
     - npm test
     - npm run build:lib
-    - npm publish dist/lingui-angular --access public
-    - gh release create v${VERSION} --generate-notes
+    - npm run build:demo
+    - gh release create ${TAG} --generate-notes
 ```
 
-Single secret needed: `NPM_TOKEN` with publish rights to the `@tocdk` scope.
+No npm publish step, no `NPM_TOKEN` secret. The release workflow exists to
+gate tags behind a green build and produce a GitHub Release for changelog
+visibility — that's it. Consumers install via `npm i github:tocDK/lingui-angular#${TAG}`.
 
 ### Versioning & releases
 
@@ -756,9 +789,12 @@ Single secret needed: `NPM_TOKEN` with publish rights to the `@tocdk` scope.
 - Start at `v0.1.0`; pre-`v1.0.0` allows breaking changes on minor bumps.
 - `v1.0.0` after first external user or 4 weeks of dogfooding without API change.
 - Manual `npm version <patch|minor|major>` → `git push --follow-tags` triggers
-  the release workflow.
+  the release workflow (creates a GitHub Release; does NOT publish to npm).
 - Hand-curated `CHANGELOG.md` (Keep-a-Changelog format). No changesets / no
   semantic-release until the project earns the tooling overhead.
+- If we later decide to publish to npm, the `prepare` script is removed and a
+  `npm publish dist/lingui-angular --access public` step is added. The
+  workspace-root vs library `package.json` split would also be re-introduced.
 
 ### Code conventions
 
@@ -770,7 +806,9 @@ Single secret needed: `NPM_TOKEN` with publish rights to the `@tocdk` scope.
 ### README structure (ships day one alongside scaffold)
 
 1. **What & why** — one paragraph.
-2. **Install** — `npm i @tocdk/lingui-angular @lingui/core` + peer-dep note.
+2. **Install** — `npm i github:tocDK/lingui-angular @lingui/core` + peer-dep
+   note + a short callout that the package is not on npm and the install
+   builds the library locally on first run.
 3. **60-second quickstart** — bootstrap → component → switcher.
 4. **Templates** — `| t` pipe and `[t]` directive (placeholder + context examples).
 5. **Plural / select.**
@@ -798,7 +836,7 @@ Single secret needed: `NPM_TOKEN` with publish rights to the `@tocdk` scope.
 | | |
 |---|---|
 | **GitHub** | `tocDK/lingui-angular` (public) |
-| **npm** | `@tocdk/lingui-angular` (+ subpath `/extractor`) |
+| **Distribution** | github-install only — `npm i github:tocDK/lingui-angular[#tag]`; not published to npm. Package `name` stays `@tocdk/lingui-angular` for cosmetic lockfile identity. Subpath `./extractor` exposed via `exports`. |
 | **License** | MIT |
 | **Angular target** | `^20.0.0`, zoneless, signal-only, standalone-only |
 | **Workspace** | Angular CLI, `projects/lingui-angular/` + `projects/kitchen-sink/` |
@@ -817,10 +855,15 @@ Single secret needed: `NPM_TOKEN` with publish rights to the `@tocdk` scope.
 
 - **GitHub Pages deployment of the kitchen sink** — README references it, but
   the deploy workflow is out of v1 scope. Add as v0.2 follow-up.
-- **`@tocdk` npm scope ownership** — confirm the scope is registered and the
-  CI `NPM_TOKEN` has publish rights before the first release.
 - **Lingui peer range** — current peer is `^6.0.0` (`@lingui/core` is at v6.1.0
   as of June 2026). Re-validate at scaffold time and broaden to `^6.0.0 || ^7.0.0`
   if a v7 ships before our first release.
+- **`prepare`-on-install footprint** — every consumer install rebuilds the
+  library and pulls our devDeps. If footprint becomes a problem (CI cost,
+  install times on shared machines), switch to a dedicated `release` branch
+  with built `dist/` committed, installed via `#release/v0.1.0`.
 - **v2: full `i18n` attribute extraction** — `<h1 i18n>Hello</h1>` parsing.
   Multi-month subproject; revisit only if community asks.
+- **v2: migrate to npm publish** — if the library gets external users, switch
+  to a proper npm publish flow (remove `prepare`, re-split workspace-root
+  and library `package.json`, add `NPM_TOKEN` + publish step to release.yml).

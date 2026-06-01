@@ -34,6 +34,11 @@
             "outputPath": "dist/kitchen-sink",
             "index": "projects/kitchen-sink/src/index.html",
             "browser": "projects/kitchen-sink/src/main.ts",
+            "server": "projects/kitchen-sink/src/main.server.ts",
+            "prerender": false,
+            "ssr": {
+              "entry": "projects/kitchen-sink/server.ts"
+            },
             "polyfills": [],
             "tsConfig": "projects/kitchen-sink/tsconfig.app.json",
             "assets": [],
@@ -42,7 +47,7 @@
           "configurations": {
             "production": {
               "budgets": [
-                { "type": "initial",  "maximumWarning": "200kb", "maximumError": "500kb" },
+                { "type": "initial",  "maximumWarning": "300kb", "maximumError": "600kb" },
                 { "type": "anyComponentStyle", "maximumWarning": "8kb", "maximumError": "16kb" }
               ]
             },

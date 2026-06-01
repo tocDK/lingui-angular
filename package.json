@@ -50,6 +50,7 @@
     "@lingui/cli": "^6.1.0",
     "@lingui/core": "^6.1.0",
     "@lingui/format-po": "^6.1.0",
+    "@types/express": "^5.0.6",
     "@types/node": "^22.19.19",
     "@typescript-eslint/eslint-plugin": "^8.60.0",
     "@typescript-eslint/parser": "^8.60.0",

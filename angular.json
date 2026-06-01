@@ -2,5 +2,25 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
-  "projects": {}
+  "projects": {
+    "lingui-angular": {
+      "projectType": "library",
+      "root": "projects/lingui-angular",
+      "sourceRoot": "projects/lingui-angular/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "options": {
+            "project": "projects/lingui-angular/ng-package.json"
+          },
+          "configurations": {
+            "production": { "tsConfig": "projects/lingui-angular/tsconfig.lib.prod.json" },
+            "development": { "tsConfig": "projects/lingui-angular/tsconfig.lib.json" }
+          },
+          "defaultConfiguration": "production"
+        }
+      }
+    }
+  }
 }

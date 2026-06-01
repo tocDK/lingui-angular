@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@angular/animations": "^20.3.23",
+    "@angular/build": "^20.3.26",
     "@angular/cli": "^20.3.26",
     "@angular/common": "^20.3.23",
     "@angular/compiler": "^20.3.23",

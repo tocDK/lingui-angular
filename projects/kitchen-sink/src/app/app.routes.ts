@@ -9,4 +9,5 @@ export const routes: Routes = [
   { path: 'explicit-id', loadComponent: () => import('./features/explicit-id.component') },
   { path: 'lazy', loadComponent: () => import('./features/lazy.component') },
   { path: 'ssr', loadComponent: () => import('./features/ssr.component') },
+  { path: 'cd', loadComponent: () => import('./features/cd.component') },
 ];

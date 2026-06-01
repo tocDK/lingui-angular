@@ -10,4 +10,5 @@ export const routes: Routes = [
   { path: 'lazy', loadComponent: () => import('./features/lazy.component') },
   { path: 'ssr', loadComponent: () => import('./features/ssr.component') },
   { path: 'cd', loadComponent: () => import('./features/cd.component') },
+  { path: 'missing', loadComponent: () => import('./features/missing.component') },
 ];

@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/spec",
+    "types": ["vitest/globals"]
+  },
+  "include": [
+    "projects/lingui-angular/src/lib/**/*.spec.ts",
+    "projects/lingui-angular/extractor/**/*.spec.ts"
+  ]
+}

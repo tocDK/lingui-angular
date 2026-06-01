@@ -45,3 +45,34 @@ describe('LinguiService catalog caching', () => {
     expect(config.loader).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('LinguiService.loading', () => {
+  it('toggles false → true → false around activate()', async () => {
+    let resolveLoader!: (c: { messages: Record<string, string> }) => void;
+    const config = buildConfig({
+      loader: () => new Promise((res) => { resolveLoader = res; }),
+    });
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), provideLingui(config)],
+    });
+    const svc = TestBed.inject(LinguiService);
+
+    expect(svc.loading()).toBe(false);
+    const p = svc.activate('fr');
+    expect(svc.loading()).toBe(true);
+    resolveLoader({ messages: {} });
+    await p;
+    expect(svc.loading()).toBe(false);
+  });
+
+  it('returns to false even when loader rejects', async () => {
+    const config = buildConfig({ loader: () => Promise.reject(new Error('boom')) });
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), provideLingui(config)],
+    });
+    const svc = TestBed.inject(LinguiService);
+
+    await expect(svc.activate('fr')).rejects.toThrow('boom');
+    expect(svc.loading()).toBe(false);
+  });
+});

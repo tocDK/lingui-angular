@@ -90,3 +90,20 @@ describe('LinguiService unknown locales', () => {
     expect(config.loader).not.toHaveBeenCalled();
   });
 });
+
+describe('LinguiService fallback locales', () => {
+  it('resolves fr-CA → fr when fallback maps it', async () => {
+    const config = buildConfig({
+      locales: ['en', 'fr'],
+      fallbackLocales: { 'fr-CA': 'fr', default: 'en' },
+    });
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), provideLingui(config)],
+    });
+    const svc = TestBed.inject(LinguiService);
+
+    await svc.activate('fr-CA');
+    expect(svc.locale()).toBe('fr');
+    expect(config.loader).toHaveBeenCalledWith('fr');
+  });
+});

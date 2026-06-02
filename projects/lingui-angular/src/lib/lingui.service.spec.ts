@@ -5,6 +5,7 @@ import { LinguiUnknownLocaleError } from './errors';
 import type { LinguiConfig } from './lingui-config';
 import { LinguiService } from './lingui.service';
 import { provideLingui } from './provide-lingui';
+import { LINGUI_SSR_KEY } from './ssr/tokens';
 
 function buildConfig(overrides: Partial<LinguiConfig> = {}): LinguiConfig {
   return {
@@ -132,6 +133,26 @@ describe('LinguiService SSR hydration', () => {
 
     expect(svc.locale()).toBe('fr');
     expect(loader).not.toHaveBeenCalled();
+  });
+});
+
+describe('LinguiService LINGUI_SSR_KEY override', () => {
+  it('honors LINGUI_SSR_KEY override for the TransferState key', async () => {
+    const customKey = 'my-app-i18n';
+    const state = new TransferState();
+    state.set(makeStateKey<{ locale: string; messages: Record<string, string> }>(customKey), { locale: 'fr', messages: { hello: 'Bonjour' } });
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: TransferState, useValue: state },
+        { provide: LINGUI_SSR_KEY, useValue: customKey },
+        provideLingui({ sourceLocale: 'en', locales: ['en', 'fr'], loader: vi.fn() }),
+      ],
+    });
+    const svc = TestBed.inject(LinguiService);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(svc.locale()).toBe('fr');
   });
 });
 

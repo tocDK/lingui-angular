@@ -3,13 +3,14 @@ import { I18n, MessageDescriptor, setupI18n } from '@lingui/core';
 import { LinguiUnknownLocaleError } from './errors';
 // LinguiConfig: consumed via injection token LINGUI_CONFIG at runtime; not imported directly
 import { hydrateCatalog } from './ssr/transfer-state';
-import { DEFAULT_SSR_TRANSFER_KEY } from './ssr/tokens';
+import { LINGUI_SSR_KEY } from './ssr/tokens';
 import { LINGUI_CONFIG } from './tokens';
 
 @Injectable()
 export class LinguiService {
   private readonly config = inject(LINGUI_CONFIG);
   private readonly transferState = inject(TransferState, { optional: true });
+  private readonly ssrKey = inject(LINGUI_SSR_KEY);
   private readonly _locale = signal<string>(this.config.sourceLocale);
   private readonly _loading = signal<boolean>(false);
   private readonly loaded = new Set<string>();
@@ -21,7 +22,7 @@ export class LinguiService {
   readonly i18n: I18n = setupI18n({ locale: this.config.sourceLocale });
 
   constructor() {
-    const key = this.config.ssrTransferKey ?? DEFAULT_SSR_TRANSFER_KEY;
+    const key = this.config.ssrTransferKey ?? this.ssrKey;
     if (this.transferState && hydrateCatalog(this.i18n, this.transferState, key)) {
       // SSR payload found: locale + catalog already loaded, no network fetch needed.
       this._locale.set(this.i18n.locale);

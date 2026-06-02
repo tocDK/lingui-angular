@@ -275,9 +275,6 @@ function renderShim(calls: ExtractedCall[], filePath: string): string {
 }
 
 function stringify(obj: Record<string, unknown>): string {
-  // Deterministic single-quoted output to keep snapshot diffs minimal.
-  const parts = Object.entries(obj).map(
-    ([k, v]) => `${k}: ${JSON.stringify(v).replace(/"/g, "'")}`,
-  );
+  const parts = Object.entries(obj).map(([k, v]) => `${k}: ${JSON.stringify(v)}`);
   return `{ ${parts.join(', ')} }`;
 }

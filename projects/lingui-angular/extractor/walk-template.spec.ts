@@ -98,6 +98,16 @@ describe('walkTemplate — edge cases', () => {
   });
 });
 
+describe('walkTemplate — apostrophes.html', () => {
+  it('emits valid JS for strings containing apostrophes', () => {
+    const source = readFileSync(join(fixturesDir, 'apostrophes.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'apostrophes.expected.ts'), 'utf8');
+    const result = walkTemplate(source, 'apostrophes.html');
+    expect(result.emit()).toBe(expected);
+    expect(result.warnings).toEqual([]);
+  });
+});
+
 describe('walkTemplate — control-flow.html', () => {
   it('recurses into @if / @for / @switch blocks', () => {
     const source = readFileSync(join(fixturesDir, 'control-flow.html'), 'utf8');

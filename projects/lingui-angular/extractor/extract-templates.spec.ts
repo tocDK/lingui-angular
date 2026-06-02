@@ -28,7 +28,7 @@ describe('extractTemplates', () => {
     expect(result.warnings).toEqual([]);
     const shimPath = join(root, '.lingui-extracted/src/app/foo.component.html.ts');
     const shim = readFileSync(shimPath, 'utf8');
-    expect(shim).toContain(`void t({ message: 'Welcome' });`);
+    expect(shim).toContain(`void t({ message: "Welcome" });`);
   });
 });
 

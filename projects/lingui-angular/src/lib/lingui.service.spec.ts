@@ -170,6 +170,26 @@ describe('LinguiService SSR hydration', () => {
   });
 });
 
+describe('LinguiService detectLocale() error handling', () => {
+  it('does not crash bootstrap when detectLocale() throws', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({
+          sourceLocale: 'en',
+          locales: ['en'],
+          loader: vi.fn(),
+          detectLocale: () => { throw new Error('boom'); },
+        }),
+      ],
+    });
+    expect(() => TestBed.inject(LinguiService)).not.toThrow();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/detectLocale/), expect.any(Error));
+    warnSpy.mockRestore();
+  });
+});
+
 describe('LinguiService config validation', () => {
   it('throws if sourceLocale is not in locales[]', () => {
     TestBed.configureTestingModule({

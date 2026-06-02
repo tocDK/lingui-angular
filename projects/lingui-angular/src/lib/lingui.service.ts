@@ -35,7 +35,12 @@ export class LinguiService {
       this.loaded.add(this.i18n.locale);
       return;
     }
-    const detected = this.config.detectLocale?.() ?? null;
+    let detected: string | null = null;
+    try {
+      detected = this.config.detectLocale?.() ?? null;
+    } catch (err) {
+      console.warn('[LinguiService] detectLocale() threw synchronously:', err);
+    }
     if (detected && detected !== this.sourceLocale) {
       void this.activate(detected).catch((err) => {
         console.warn(`[LinguiService] Auto-detect locale "${detected}" failed:`, err);

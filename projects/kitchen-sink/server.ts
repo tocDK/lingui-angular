@@ -17,12 +17,13 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', browserDistFolder);
 
-  // Serve static files from /browser
+  // Serve static files from /browser, but DO NOT serve index.html for `/`
+  // — that path goes through Angular SSR below.
   server.get(
     '**',
     express.static(browserDistFolder, {
       maxAge: '1y',
-      index: 'index.html',
+      index: false,
     }),
   );
 

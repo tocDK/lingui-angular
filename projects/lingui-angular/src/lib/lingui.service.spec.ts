@@ -27,10 +27,44 @@ describe('LinguiService.activate()', () => {
     const svc = TestBed.inject(LinguiService);
 
     expect(svc.locale()).toBe('en');
-    await svc.activate('fr');
+    const result = await svc.activate('fr');
+    expect(result).toBe('fr');
     expect(svc.locale()).toBe('fr');
     expect(config.loader).toHaveBeenCalledOnce();
     expect(config.loader).toHaveBeenCalledWith('fr');
+  });
+});
+
+describe('LinguiService concurrent activate()', () => {
+  it('serializes concurrent activate() calls — last call wins', async () => {
+    let resolveFr!: (c: { messages: Record<string, string> }) => void;
+    let resolveDe!: (c: { messages: Record<string, string> }) => void;
+    const loader = vi.fn((locale: string) => {
+      if (locale === 'fr') return new Promise<{ messages: Record<string, string> }>((r) => { resolveFr = r; });
+      if (locale === 'de') return new Promise<{ messages: Record<string, string> }>((r) => { resolveDe = r; });
+      return Promise.resolve({ messages: {} });
+    });
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({ sourceLocale: 'en', locales: ['en', 'fr', 'de'], loader }),
+      ],
+    });
+    const svc = TestBed.inject(LinguiService);
+
+    const frPromise = svc.activate('fr');
+    const dePromise = svc.activate('de');
+
+    // de resolves first
+    resolveDe({ messages: {} });
+    await dePromise;
+    expect(svc.locale()).toBe('de');
+
+    // fr resolves later but should NOT win
+    resolveFr({ messages: {} });
+    await frPromise;
+    expect(svc.locale()).toBe('de');
+    expect(svc.loading()).toBe(false);
   });
 });
 

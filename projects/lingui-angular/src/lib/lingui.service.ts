@@ -14,6 +14,7 @@ export class LinguiService {
   private readonly _locale = signal<string>(this.config.sourceLocale);
   private readonly _loading = signal<boolean>(false);
   private readonly loaded = new Set<string>();
+  private _inflight: string | null = null;
 
   readonly locale: Signal<string> = this._locale.asReadonly();
   readonly loading: Signal<boolean> = this._loading.asReadonly();
@@ -39,22 +40,29 @@ export class LinguiService {
     }
   }
 
-  async activate(locale: string): Promise<void> {
+  async activate(locale: string): Promise<string> {
     const resolved = this.resolveLocale(locale);
     if (resolved === null) {
       throw new LinguiUnknownLocaleError(locale);
     }
+    this._inflight = resolved;
     this._loading.set(true);
     try {
       if (!this.loaded.has(resolved)) {
         const catalog = await this.config.loader(resolved);
+        if (this._inflight !== resolved) return this._locale();
         this.i18n.load(resolved, catalog.messages);
         this.loaded.add(resolved);
       }
+      if (this._inflight !== resolved) return this._locale();
       this.i18n.activate(resolved);
       this._locale.set(resolved);
+      return resolved;
     } finally {
-      this._loading.set(false);
+      if (this._inflight === resolved) {
+        this._loading.set(false);
+        this._inflight = null;
+      }
     }
   }
 

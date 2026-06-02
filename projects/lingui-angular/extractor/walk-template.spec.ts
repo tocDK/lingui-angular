@@ -44,14 +44,28 @@ describe('walkTemplate — select.html', () => {
 describe('walkTemplate — invalid.html', () => {
   it('warns and emits no shim calls for the bad patterns', () => {
     const source = readFileSync(join(fixturesDir, 'invalid.html'), 'utf8');
+    const expected = JSON.parse(
+      readFileSync(join(fixturesDir, 'invalid.expected.warnings.json'), 'utf8'),
+    );
     const result = walkTemplate(source, 'invalid.html');
     expect(result.calls).toEqual([]);
-    expect(result.warnings.length).toBe(3);
-    expect(result.warnings.map((w) => w.reason)).toEqual([
-      't pipe needs a string literal message',
-      't pipe needs a string literal message',
-      '[t] needs a string literal',
-    ]);
+    expect(result.warnings).toEqual(expected);
+  });
+});
+
+describe('walkTemplate — context.html', () => {
+  it('extracts $context per-call', () => {
+    const source = readFileSync(join(fixturesDir, 'context.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'context.expected.ts'), 'utf8');
+    expect(walkTemplate(source, 'context.html').emit()).toBe(expected);
+  });
+});
+
+describe('walkTemplate — directive.html', () => {
+  it('extracts [t] literal bindings', () => {
+    const source = readFileSync(join(fixturesDir, 'directive.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'directive.expected.ts'), 'utf8');
+    expect(walkTemplate(source, 'directive.html').emit()).toBe(expected);
   });
 });
 
@@ -68,6 +82,20 @@ describe('walkTemplate — edge cases', () => {
     const result = walkTemplate(source, 'test.html');
     expect(result.calls).toEqual([]);
     expect(result.warnings[0]?.reason).toBe('tPlural requires an "other" rule');
+  });
+
+  it('warns when tPlural has non-literal rule values', () => {
+    const result = walkTemplate(`<p>{{ count | tPlural: { one: computed(), other: '# items' } }}</p>`, 'mixed.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings.length).toBe(1);
+    expect(result.warnings[0].reason).toMatch(/string literals/);
+  });
+
+  it('warns when tSelect is missing the "other" branch', () => {
+    const result = walkTemplate(`<p>{{ status | tSelect: { active: 'On' } }}</p>`, 'sel-missing.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings.length).toBe(1);
+    expect(result.warnings[0].reason).toMatch(/other/);
   });
 
   it('warns when tSelect rules arg is not a literal object', () => {
@@ -95,6 +123,26 @@ describe('walkTemplate — edge cases', () => {
   it('throws on malformed template with parse errors', () => {
     const source = `<unclosed`;
     expect(() => walkTemplate(source, 'bad.html')).toThrow(/Template parse failed/);
+  });
+});
+
+describe('walkTemplate — apostrophes.html', () => {
+  it('emits valid JS for strings containing apostrophes', () => {
+    const source = readFileSync(join(fixturesDir, 'apostrophes.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'apostrophes.expected.ts'), 'utf8');
+    const result = walkTemplate(source, 'apostrophes.html');
+    expect(result.emit()).toBe(expected);
+    expect(result.warnings).toEqual([]);
+  });
+});
+
+describe('walkTemplate — control-flow.html', () => {
+  it('recurses into @if / @for / @switch blocks', () => {
+    const source = readFileSync(join(fixturesDir, 'control-flow.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'control-flow.expected.ts'), 'utf8');
+    const result = walkTemplate(source, 'control-flow.html');
+    expect(result.emit()).toBe(expected);
+    expect(result.warnings).toEqual([]);
   });
 });
 

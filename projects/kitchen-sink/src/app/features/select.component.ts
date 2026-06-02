@@ -15,6 +15,12 @@ const STATUS_LABELS: Record<string, string> & { other: string } = {
   template: `
     <app-demo-page title="select">
       <div rendered>
+        <p style="font-size:.875rem;color:#666">
+          Note: rule values (<code>'Online'</code>, <code>'Idle'</code>, <code>'Offline'</code>) are
+          literal English here — they are not auto-translated by the pipe. This route demonstrates
+          the pipe's matching logic. To localize the rule values, wrap each one in its own
+          <code>| t</code> call (e.g. <code>active: 'Online' | t</code>) and add the catalog entries.
+        </p>
         <p>
           <label>Status:
             <select #s (change)="status.set(s.value)">

@@ -5,6 +5,7 @@ import { LinguiUnknownLocaleError } from './errors';
 import type { LinguiConfig } from './lingui-config';
 import { LinguiService } from './lingui.service';
 import { provideLingui } from './provide-lingui';
+import { LINGUI_SSR_KEY } from './ssr/tokens';
 
 function buildConfig(overrides: Partial<LinguiConfig> = {}): LinguiConfig {
   return {
@@ -26,10 +27,44 @@ describe('LinguiService.activate()', () => {
     const svc = TestBed.inject(LinguiService);
 
     expect(svc.locale()).toBe('en');
-    await svc.activate('fr');
+    const result = await svc.activate('fr');
+    expect(result).toBe('fr');
     expect(svc.locale()).toBe('fr');
     expect(config.loader).toHaveBeenCalledOnce();
     expect(config.loader).toHaveBeenCalledWith('fr');
+  });
+});
+
+describe('LinguiService concurrent activate()', () => {
+  it('serializes concurrent activate() calls — last call wins', async () => {
+    let resolveFr!: (c: { messages: Record<string, string> }) => void;
+    let resolveDe!: (c: { messages: Record<string, string> }) => void;
+    const loader = vi.fn((locale: string) => {
+      if (locale === 'fr') return new Promise<{ messages: Record<string, string> }>((r) => { resolveFr = r; });
+      if (locale === 'de') return new Promise<{ messages: Record<string, string> }>((r) => { resolveDe = r; });
+      return Promise.resolve({ messages: {} });
+    });
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({ sourceLocale: 'en', locales: ['en', 'fr', 'de'], loader }),
+      ],
+    });
+    const svc = TestBed.inject(LinguiService);
+
+    const frPromise = svc.activate('fr');
+    const dePromise = svc.activate('de');
+
+    // de resolves first
+    resolveDe({ messages: {} });
+    await dePromise;
+    expect(svc.locale()).toBe('de');
+
+    // fr resolves later but should NOT win
+    resolveFr({ messages: {} });
+    await frPromise;
+    expect(svc.locale()).toBe('de');
+    expect(svc.loading()).toBe(false);
   });
 });
 
@@ -132,6 +167,58 @@ describe('LinguiService SSR hydration', () => {
 
     expect(svc.locale()).toBe('fr');
     expect(loader).not.toHaveBeenCalled();
+  });
+});
+
+describe('LinguiService detectLocale() error handling', () => {
+  it('does not crash bootstrap when detectLocale() throws', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({
+          sourceLocale: 'en',
+          locales: ['en'],
+          loader: vi.fn(),
+          detectLocale: () => { throw new Error('boom'); },
+        }),
+      ],
+    });
+    expect(() => TestBed.inject(LinguiService)).not.toThrow();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringMatching(/detectLocale/), expect.any(Error));
+    warnSpy.mockRestore();
+  });
+});
+
+describe('LinguiService config validation', () => {
+  it('throws if sourceLocale is not in locales[]', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({ sourceLocale: 'en', locales: ['fr', 'de'], loader: vi.fn() }),
+      ],
+    });
+    expect(() => TestBed.inject(LinguiService)).toThrow(/sourceLocale.*must be in locales/);
+  });
+});
+
+describe('LinguiService LINGUI_SSR_KEY override', () => {
+  it('honors LINGUI_SSR_KEY override for the TransferState key', async () => {
+    const customKey = 'my-app-i18n';
+    const state = new TransferState();
+    state.set(makeStateKey<{ locale: string; messages: Record<string, string> }>(customKey), { locale: 'fr', messages: { hello: 'Bonjour' } });
+
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: TransferState, useValue: state },
+        { provide: LINGUI_SSR_KEY, useValue: customKey },
+        provideLingui({ sourceLocale: 'en', locales: ['en', 'fr'], loader: vi.fn() }),
+      ],
+    });
+    const svc = TestBed.inject(LinguiService);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(svc.locale()).toBe('fr');
   });
 });
 

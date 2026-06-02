@@ -34,7 +34,13 @@ async function main(): Promise<void> {
 
   if (watch) {
     const watcher = chokidar.watch(cfg.include, { cwd, ignoreInitial: true });
-    watcher.on('all', run);
+    watcher.on('all', () => {
+      try {
+        run();
+      } catch (err) {
+        console.error('[lingui-angular] extraction error:', err);
+      }
+    });
     console.log('[lingui-angular] watching for template changes…');
   }
 }

@@ -1,4 +1,5 @@
 import { InjectionToken } from '@angular/core';
+import type { Messages } from '@lingui/core';
 
 /** Default `TransferState` key; can be overridden via `LinguiConfig.ssrTransferKey`. */
 export const DEFAULT_SSR_TRANSFER_KEY = 'lingui-catalog';
@@ -6,7 +7,7 @@ export const DEFAULT_SSR_TRANSFER_KEY = 'lingui-catalog';
 /** Serialized payload shape used between server and client. */
 export interface LinguiTransferPayload {
   locale: string;
-  messages: Record<string, string>;
+  messages: Messages;
 }
 
 /** Optional override token consumers can provide for non-default keys. */

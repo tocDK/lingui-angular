@@ -10,6 +10,12 @@ import { DemoPageComponent } from '../shared/demo-page.component';
   template: `
     <app-demo-page title="plural">
       <div rendered>
+        <p style="font-size:.875rem;color:#666">
+          Note: rule values (<code>'# item'</code>, <code>'# items'</code>) are literal English here —
+          they are not auto-translated by the pipe. This route demonstrates CLDR plural-form selection
+          and <code>#</code>-substitution. To localize the rule values, the catalog needs the full
+          plural-form string per locale (Lingui supports this via the macro's plural syntax).
+        </p>
         <p>
           <label>Count:
             <input type="number" [value]="count()" (input)="count.set(+$any($event.target).value)" />

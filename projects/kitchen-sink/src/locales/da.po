@@ -40,5 +40,10 @@ msgstr "Åbn"
 msgid "Server-side rendering demo"
 msgstr "Demo af server-side rendering"
 
+# Deliberately left untranslated to demonstrate fallback behaviour on /missing route
 msgid "this is deliberately untranslated"
-msgstr "dette er bevidst uoversat"
+msgstr ""
+
+# Explicit-id demo: the source string is "Welcome" but the catalog key is auth.welcome
+msgid "auth.welcome"
+msgstr "Velkommen (DA — via $id)"

@@ -82,11 +82,13 @@ flowchart LR
 
 ## Install
 
+> **Requires Node ≥ 22** (declared in `engines` — Angular 20 and ng-packagr 20 pull this floor).
+
 ```bash
 npm install github:tocDK/lingui-angular
 ```
 
-The install runs `prepare`, which builds the library (~30 s first time). Subsequent installs skip the build when the `dist/` folder is already present.
+When installed as a dependency (the common case), npm fetches the repo's pre-built `dist/` artifact — the `prepare` script's guard skips rebuild because the `projects/` source tree is not packed in the published `files`. Cloning the repo for local development DOES trigger `prepare` (since `projects/` is present), which builds the library (~30 s first time).
 
 **Peer dependencies** — install these yourself:
 
@@ -288,10 +290,12 @@ Wire this up in `package.json`:
 {
   "scripts": {
     "extract": "lingui-angular extract && lingui extract && lingui-angular clean",
-    "extract:check": "lingui compile --typescript && git diff --exit-code src/locales"
+    "extract:check": "lingui compile --typescript && git diff --exit-code projects/your-app/src/locales"
   }
 }
 ```
+
+> **`extract:check` scope.** This guard catches drift between committed `.po` files and the generated `.ts` modules (translator edited the `.po` but forgot to recompile). It does **not** catch the case where a developer adds a new translatable string to source and forgets to run `npm run extract` first. The fuller cycle requires the extractor to also walk inline templates declared in component decorators, which is tracked for v0.2 — at present the walker only processes standalone `.html` files. Until then, run `npm run extract` manually before every commit that touches translatable strings.
 
 ### 3. Compile catalogs
 

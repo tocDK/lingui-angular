@@ -55,6 +55,22 @@ describe('walkTemplate — invalid.html', () => {
   });
 });
 
+describe('walkTemplate — context.html', () => {
+  it('extracts $context per-call', () => {
+    const source = readFileSync(join(fixturesDir, 'context.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'context.expected.ts'), 'utf8');
+    expect(walkTemplate(source, 'context.html').emit()).toBe(expected);
+  });
+});
+
+describe('walkTemplate — directive.html', () => {
+  it('extracts [t] literal bindings', () => {
+    const source = readFileSync(join(fixturesDir, 'directive.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'directive.expected.ts'), 'utf8');
+    expect(walkTemplate(source, 'directive.html').emit()).toBe(expected);
+  });
+});
+
 describe('walkTemplate — edge cases', () => {
   it('warns when tPlural rules arg is not a literal object', () => {
     const source = `<p>{{ count | tPlural: someVar }}</p>\n`;

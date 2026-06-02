@@ -44,14 +44,12 @@ describe('walkTemplate — select.html', () => {
 describe('walkTemplate — invalid.html', () => {
   it('warns and emits no shim calls for the bad patterns', () => {
     const source = readFileSync(join(fixturesDir, 'invalid.html'), 'utf8');
+    const expected = JSON.parse(
+      readFileSync(join(fixturesDir, 'invalid.expected.warnings.json'), 'utf8'),
+    );
     const result = walkTemplate(source, 'invalid.html');
     expect(result.calls).toEqual([]);
-    expect(result.warnings.length).toBe(3);
-    expect(result.warnings.map((w) => w.reason)).toEqual([
-      't pipe needs a string literal message',
-      't pipe needs a string literal message',
-      '[t] needs a string literal',
-    ]);
+    expect(result.warnings).toEqual(expected);
   });
 });
 

@@ -5,10 +5,7 @@ import type { LinguiTransferPayload } from './tokens';
 /** Server-side: writes the active catalog into TransferState under `key`. */
 export function serializeCatalog(i18n: I18n, state: TransferState, key: string): void {
   const stateKey = makeStateKey<LinguiTransferPayload>(key);
-  state.set(stateKey, {
-    locale: i18n.locale,
-    messages: i18n.messages as Record<string, string>,
-  });
+  state.set(stateKey, { locale: i18n.locale, messages: i18n.messages });
 }
 
 /** Client-side: if TransferState contains a catalog under `key`, hydrate i18n with it.

@@ -43,3 +43,7 @@ msgstr "Démo de rendu côté serveur"
 # Deliberately left untranslated to demonstrate fallback behaviour on /missing route
 msgid "this is deliberately untranslated"
 msgstr ""
+
+# Explicit-id demo: the source string is "Welcome" but the catalog key is auth.welcome
+msgid "auth.welcome"
+msgstr "Bienvenue (FR — via $id)"

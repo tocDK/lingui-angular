@@ -1,0 +1,12 @@
+@if (show) {
+  <p>{{ 'In an if' | t }}</p>
+}
+@for (item of items; track item) {
+  <p>{{ 'In a for' | t }}</p>
+} @empty {
+  <p>{{ 'For is empty' | t }}</p>
+}
+@switch (kind) {
+  @case ('a') { <p>{{ 'Case A' | t }}</p> }
+  @default { <p>{{ 'Default case' | t }}</p> }
+}

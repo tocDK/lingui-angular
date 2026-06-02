@@ -7,8 +7,12 @@ import {
   parseTemplate,
   TmplAstBoundAttribute,
   TmplAstBoundText,
+  TmplAstDeferredBlock,
   TmplAstElement,
+  TmplAstForLoopBlock,
+  TmplAstIfBlock,
   TmplAstNode,
+  TmplAstSwitchBlock,
   TmplAstTemplate,
 } from '@angular/compiler';
 
@@ -54,6 +58,18 @@ export function walkTemplate(source: string, filePath: string): WalkResult {
         walk(node.children);
       } else if (node instanceof TmplAstBoundText) {
         handleBoundText(node, filePath, calls, warnings);
+      } else if (node instanceof TmplAstIfBlock) {
+        for (const branch of node.branches) walk(branch.children);
+      } else if (node instanceof TmplAstForLoopBlock) {
+        walk(node.children);
+        if (node.empty) walk(node.empty.children);
+      } else if (node instanceof TmplAstSwitchBlock) {
+        for (const c of node.cases) walk(c.children);
+      } else if (node instanceof TmplAstDeferredBlock) {
+        walk(node.children);
+        if (node.placeholder) walk(node.placeholder.children);
+        if (node.loading) walk(node.loading.children);
+        if (node.error) walk(node.error.children);
       }
     }
   };

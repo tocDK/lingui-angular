@@ -98,6 +98,16 @@ describe('walkTemplate — edge cases', () => {
   });
 });
 
+describe('walkTemplate — control-flow.html', () => {
+  it('recurses into @if / @for / @switch blocks', () => {
+    const source = readFileSync(join(fixturesDir, 'control-flow.html'), 'utf8');
+    const expected = readFileSync(join(fixturesDir, 'control-flow.expected.ts'), 'utf8');
+    const result = walkTemplate(source, 'control-flow.html');
+    expect(result.emit()).toBe(expected);
+    expect(result.warnings).toEqual([]);
+  });
+});
+
 describe('walkTemplate — chained pipes', () => {
   it("silently skips {{ 'X' | t | uppercase }} (outermost is not t)", () => {
     const result = walkTemplate(`<p>{{ 'X' | t | uppercase }}</p>`, 'chain1.html');

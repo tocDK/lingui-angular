@@ -23,6 +23,11 @@ export class LinguiService {
   readonly i18n: I18n = setupI18n({ locale: this.config.sourceLocale });
 
   constructor() {
+    if (!this.config.locales.includes(this.config.sourceLocale)) {
+      throw new Error(
+        `[LinguiService] sourceLocale "${this.config.sourceLocale}" must be in locales[] (got [${this.config.locales.join(', ')}])`,
+      );
+    }
     const key = this.config.ssrTransferKey ?? this.ssrKey;
     if (this.transferState && hydrateCatalog(this.i18n, this.transferState, key)) {
       // SSR payload found: locale + catalog already loaded, no network fetch needed.

@@ -170,6 +170,18 @@ describe('LinguiService SSR hydration', () => {
   });
 });
 
+describe('LinguiService config validation', () => {
+  it('throws if sourceLocale is not in locales[]', () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({ sourceLocale: 'en', locales: ['fr', 'de'], loader: vi.fn() }),
+      ],
+    });
+    expect(() => TestBed.inject(LinguiService)).toThrow(/sourceLocale.*must be in locales/);
+  });
+});
+
 describe('LinguiService LINGUI_SSR_KEY override', () => {
   it('honors LINGUI_SSR_KEY override for the TransferState key', async () => {
     const customKey = 'my-app-i18n';

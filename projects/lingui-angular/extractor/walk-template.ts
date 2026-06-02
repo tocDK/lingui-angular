@@ -196,6 +196,11 @@ function handleRulesPipe(
       rules[keyNode.key] = val.value;
     }
   });
+  const captured = Object.keys(rules).length;
+  if (captured !== rulesArg.keys.length) {
+    warnings.push({ file: filePath, reason: `${kind} rule values must all be string literals`, line, column });
+    return;
+  }
   if (!rules['other']) {
     warnings.push({ file: filePath, reason: `${kind} requires an "other" rule`, line, column });
     return;

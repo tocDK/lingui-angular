@@ -70,6 +70,13 @@ describe('walkTemplate — edge cases', () => {
     expect(result.warnings[0]?.reason).toBe('tPlural requires an "other" rule');
   });
 
+  it('warns when tPlural has non-literal rule values', () => {
+    const result = walkTemplate(`<p>{{ count | tPlural: { one: computed(), other: '# items' } }}</p>`, 'mixed.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings.length).toBe(1);
+    expect(result.warnings[0].reason).toMatch(/string literals/);
+  });
+
   it('warns when tSelect rules arg is not a literal object', () => {
     const source = `<p>{{ status | tSelect: someVar }}</p>\n`;
     const result = walkTemplate(source, 'test.html');

@@ -82,6 +82,24 @@ export class LinguiService {
     return this.i18n._(descriptor as MessageDescriptor);
   }
 
+  /**
+   * Returns a `Signal<string>` that re-emits when the active locale changes.
+   *
+   * **Call this once and store the result.** Each call creates a new `computed()`,
+   * so calling `t$()` inside another computed or template expression allocates
+   * a new signal every CD cycle. The idiomatic shape is:
+   *
+   * ```typescript
+   * readonly greeting = this.lingui.t$('Hello');
+   * // in template: {{ greeting() }}
+   * ```
+   *
+   * Avoid:
+   * ```typescript
+   * // BAD: new computed every render
+   * readonly greeting = computed(() => this.lingui.t$('Hello')());
+   * ```
+   */
   t$(descriptor: MessageDescriptor | string): Signal<string> {
     return computed(() => {
       // Read locale signal to register reactive dependency —

@@ -10,7 +10,7 @@ import { DemoPageComponent } from '../shared/demo-page.component';
     <app-demo-page title="missing">
       <div rendered>
         <p>
-          The string below is intentionally absent from <code>fr.po</code> — switch to FR
+          The string below is intentionally absent from <code>da.po</code> — switch to DA
           and watch it fall back to the English source string.
         </p>
         <p>{{ 'this is deliberately untranslated' | t }}</p>

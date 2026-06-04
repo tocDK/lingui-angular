@@ -9,11 +9,11 @@ import { DemoPageComponent } from '../shared/demo-page.component';
   template: `
     <app-demo-page title="lazy">
       <div rendered>
-        <p>The Spanish catalog is only fetched when this route is first visited.</p>
+        <p>The Danish catalog is only fetched when this route is first visited.</p>
         @if (loaded()) {
-          <p>ES catalog ready. <button (click)="activateEs()">Activate Spanish</button></p>
+          <p>DA catalog ready. <button (click)="activateDa()">Activate Danish</button></p>
         } @else {
-          <p><em>Loading es catalog…</em></p>
+          <p><em>Loading da catalog…</em></p>
         }
         <p>Current locale: <strong>{{ lingui.locale() }}</strong></p>
       </div>
@@ -25,11 +25,11 @@ export default class LazyComponent {
   protected loaded = signal(false);
 
   constructor() {
-    // Pre-load the es catalog so a subsequent activate('es') is instant.
-    void this.lingui.activate('es').then(() => this.loaded.set(true));
+    // Pre-load the da catalog so a subsequent activate('da') is instant.
+    void this.lingui.activate('da').then(() => this.loaded.set(true));
   }
 
-  protected activateEs(): void {
-    void this.lingui.activate('es');
+  protected activateDa(): void {
+    void this.lingui.activate('da');
   }
 }

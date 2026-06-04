@@ -19,12 +19,10 @@ const bootstrap = () =>
       provideServerRendering(),
       provideLingui({
         sourceLocale: 'en',
-        locales: ['en', 'fr', 'da', 'es'],
+        locales: ['en', 'da'],
         loader: async (locale) => {
           switch (locale) {
-            case 'fr': return import('./locales/fr');
             case 'da': return import('./locales/da');
-            case 'es': return import('./locales/es');
             default:   return import('./locales/en');
           }
         },

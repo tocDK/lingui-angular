@@ -9,6 +9,9 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- kitchen-sink demo trimmed from 4 locales (en/fr/da/es) to 2 (en/da). Simpler scan: any future translation-pipeline regression is visible at a glance via the EN↔DA toggle.
+
 [Unreleased]: https://github.com/tocDK/lingui-angular/compare/v0.1.2...HEAD
 
 ## [0.1.2] — 2026-06-04

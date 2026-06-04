@@ -1,4 +1,5 @@
 import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideServerRendering } from '@angular/ssr';
 import { APP_INITIALIZER, TransferState, inject, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -15,6 +16,7 @@ const bootstrap = () =>
   bootstrapApplication(AppComponent, {
     providers: [
       provideZonelessChangeDetection(),
+      provideAnimationsAsync(),
       provideRouter(routes),
       provideServerRendering(),
       provideLingui({

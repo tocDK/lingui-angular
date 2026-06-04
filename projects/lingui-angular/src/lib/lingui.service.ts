@@ -1,6 +1,7 @@
 import { Injectable, Signal, TransferState, computed, inject, signal } from '@angular/core';
 import { I18n, MessageDescriptor, setupI18n } from '@lingui/core';
 import { LinguiUnknownLocaleError } from './errors';
+import { lookupDescriptor } from './internal/lookup';
 // LinguiConfig: consumed via injection token LINGUI_CONFIG at runtime; not imported directly
 import { hydrateCatalog } from './ssr/transfer-state';
 import { LINGUI_SSR_KEY } from './ssr/tokens';
@@ -77,9 +78,10 @@ export class LinguiService {
   }
 
   t(descriptor: MessageDescriptor | string): string {
-    // i18n._ has two overloads (string | MessageDescriptor); cast to satisfy
-    // the TypeScript compiler while keeping a single call site.
-    return this.i18n._(descriptor as MessageDescriptor);
+    // Hash bare-string sources / id-less descriptors so the runtime id matches
+    // what `lingui compile --typescript` emits. Descriptors with an explicit
+    // `id` (e.g. macro-generated) pass through unchanged.
+    return lookupDescriptor(this.i18n, descriptor);
   }
 
   /**

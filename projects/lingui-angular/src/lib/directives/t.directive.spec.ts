@@ -1,6 +1,7 @@
 import { Component, provideZonelessChangeDetection, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { generateMessageId } from '@lingui/message-utils/generateMessageId';
 import { describe, expect, it } from 'vitest';
 import { LinguiService } from '../lingui.service';
 import { provideLingui } from '../provide-lingui';
@@ -22,8 +23,15 @@ class HostWithDynamicKey {
   readonly key = signal('Cancel');
 }
 
+@Component({
+  standalone: true,
+  imports: [TDirective],
+  template: `<button [t]="'Log in to your account'" data-test></button>`,
+})
+class HostHashedCatalog {}
+
 describe('TDirective', () => {
-  it('writes translated text into the host element textContent', async () => {
+  it('writes translated text into the host element textContent (source-keyed back-compat)', async () => {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
@@ -68,5 +76,33 @@ describe('TDirective', () => {
     fixture.componentInstance.key.set('Confirm');
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('[data-test]')).nativeElement.textContent.trim()).toBe('Confirm');
+  });
+
+  it('looks up by hashed id (real `lingui compile --typescript` output shape)', async () => {
+    const source = 'Log in to your account';
+    const hash = generateMessageId(source);
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({
+          sourceLocale: 'en',
+          locales: ['en', 'da'],
+          loader: async (l) => ({
+            messages: { [hash]: l === 'da' ? 'Log ind på din konto' : source },
+          }),
+        }),
+      ],
+    });
+    const fixture = TestBed.createComponent(HostHashedCatalog);
+    const svc = TestBed.inject(LinguiService);
+    await svc.activate('en');
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('[data-test]')).nativeElement.textContent.trim())
+      .toBe(source);
+
+    await svc.activate('da');
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('[data-test]')).nativeElement.textContent.trim())
+      .toBe('Log ind på din konto');
   });
 });

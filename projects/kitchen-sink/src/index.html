@@ -5,6 +5,32 @@
     <title>@tocdk/lingui-angular kitchen sink</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <script>
+      // FOUC guard: apply persisted theme before Angular boots so dark-mode
+      // visitors don't see a flash of the light theme on first paint.
+      (function () {
+        try {
+          var saved = localStorage.getItem('kitchen-sink:theme');
+          var prefersDark =
+            window.matchMedia &&
+            window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var dark = saved ? saved === 'dark' : prefersDark;
+          if (dark) document.documentElement.classList.add('dark-theme');
+        } catch (_) {
+          /* localStorage may throw in private mode */
+        }
+      })();
+    </script>
   </head>
   <body>
     <app-root></app-root>

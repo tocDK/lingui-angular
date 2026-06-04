@@ -9,7 +9,14 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/tocDK/lingui-angular/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/tocDK/lingui-angular/compare/v0.1.1...HEAD
+
+## [0.1.1] — 2026-06-04
+
+### Fixed
+- Template extractor: also extract `t` (and `tPlural` / `tSelect`) pipes from bound attributes like `[label]="'Foo' | t"`, `[attr.title]="'…' | t"`, `[attr.aria-label]="'…' | t"`. Previously these forms were silently ignored because `handleBoundAttr` only recognized the `[t]` directive form. Consumer impact: button labels, aria-labels, and other attribute-bound strings using the pipe form are now harvested into `.po` catalogs as expected.
+
+[0.1.1]: https://github.com/tocDK/lingui-angular/releases/tag/v0.1.1
 
 ## [0.1.0] — 2026-06-01
 

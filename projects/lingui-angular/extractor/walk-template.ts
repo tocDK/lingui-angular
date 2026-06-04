@@ -1,10 +1,22 @@
 import {
+  AST,
   ASTWithSource,
+  Binary,
   BindingPipe,
+  Call,
+  Conditional,
   Interpolation,
+  KeyedRead,
+  LiteralArray,
   LiteralMap,
   LiteralPrimitive,
+  NonNullAssert,
   parseTemplate,
+  PrefixNot,
+  PropertyRead,
+  SafeCall,
+  SafeKeyedRead,
+  SafePropertyRead,
   TmplAstBoundAttribute,
   TmplAstBoundText,
   TmplAstDeferredBlock,
@@ -217,15 +229,136 @@ function handleBoundAttr(
   calls: ExtractedCall[],
   warnings: ExtractionWarning[],
 ): void {
-  if (attr.name !== 't') return;
   const ast = (attr.value as ASTWithSource).ast;
   const line = attr.sourceSpan.start.line + 1;
   const column = attr.sourceSpan.start.col + 1;
-  if (ast instanceof LiteralPrimitive && typeof ast.value === 'string') {
-    calls.push({ kind: 't', message: ast.value, line, column });
-  } else {
-    warnings.push({ file: filePath, reason: '[t] needs a string literal', line, column });
+
+  // `[t]="'Foo'"` — the legacy directive form. Value must be a string literal.
+  if (attr.name === 't') {
+    if (ast instanceof LiteralPrimitive && typeof ast.value === 'string') {
+      calls.push({ kind: 't', message: ast.value, line, column });
+    } else {
+      warnings.push({ file: filePath, reason: '[t] needs a string literal', line, column });
+    }
+    return;
   }
+
+  // Bound-attribute pipe form: `[label]="'Foo' | t"`, `[attr.title]="'…' | t"`,
+  // `[attr.aria-label]="'…' | t"`, etc. The pipe may not be the outermost AST node
+  // (e.g. `'Foo' | t | uppercase` puts t inside an outer `uppercase` pipe), so we
+  // recursively walk the expression AST looking for BindingPipe(t|tPlural|tSelect).
+  //
+  // Trade-off vs. handleBoundText: handleBoundText only inspects the top-level
+  // pipe of each interpolation expression and is therefore stricter about chained
+  // pipes. Here we deliberately walk recursively so that bound attributes like
+  // `[label]="'Foo' | t | uppercase"` are still extracted. Position info is the
+  // attribute's own sourceSpan (line/col where the binding starts) — this is
+  // less precise than the pipe-exp absolute offset used in handleBoundText, but
+  // attribute pipes are typically one-liners so the loss is acceptable.
+  const fileContent: string | undefined = (attr.sourceSpan.start as { file?: { content: string } }).file?.content;
+  visitForTPipes(ast, attr, filePath, fileContent, calls, warnings);
+}
+
+/**
+ * Recursively walk an expression AST and emit any t / tPlural / tSelect pipe we find.
+ *
+ * We stop descending once we've matched a t-family pipe — we don't recurse into its
+ * `.exp` or `.args` to avoid double-extracting from nested options/rules maps.
+ *
+ * Position info for each emitted call: the BindingPipe's own sourceSpan converted
+ * to 1-indexed line/col using the attribute's file content, falling back to the
+ * attribute's own start line/col when offsets aren't available.
+ */
+function visitForTPipes(
+  ast: AST,
+  attr: TmplAstBoundAttribute,
+  filePath: string,
+  fileContent: string | undefined,
+  calls: ExtractedCall[],
+  warnings: ExtractionWarning[],
+): void {
+  if (ast instanceof BindingPipe) {
+    if (ast.name === 't' || ast.name === 'tPlural' || ast.name === 'tSelect') {
+      const { line, column } = resolvePosition(
+        ast.exp.sourceSpan.start as number,
+        fileContent,
+        { line: attr.sourceSpan.start.line, col: attr.sourceSpan.start.col },
+      );
+      switch (ast.name) {
+        case 't':
+          handleTPipe(ast, filePath, line, column, calls, warnings);
+          break;
+        case 'tPlural':
+          handleRulesPipe(ast, 'tPlural', filePath, line, column, calls, warnings);
+          break;
+        case 'tSelect':
+          handleRulesPipe(ast, 'tSelect', filePath, line, column, calls, warnings);
+          break;
+      }
+      // Don't recurse into the matched pipe's exp/args — they're handled by
+      // handleTPipe / handleRulesPipe and we don't want to double-extract.
+      return;
+    }
+    // Non-t pipe (e.g. `uppercase`) — recurse into its exp looking for nested t.
+    // We don't recurse into ast.args (pipe arguments are typed `any[]`) — t pipes
+    // showing up as pipe args is not a real-world pattern.
+    visitForTPipes(ast.exp, attr, filePath, fileContent, calls, warnings);
+    return;
+  }
+
+  // Walk into AST shapes that can contain sub-expressions. The set of shapes we
+  // see in bound attribute values is bounded — these cover the common cases.
+  if (ast instanceof Interpolation) {
+    for (const expr of ast.expressions) visitForTPipes(expr, attr, filePath, fileContent, calls, warnings);
+    return;
+  }
+  if (ast instanceof Conditional) {
+    visitForTPipes(ast.condition, attr, filePath, fileContent, calls, warnings);
+    visitForTPipes(ast.trueExp, attr, filePath, fileContent, calls, warnings);
+    visitForTPipes(ast.falseExp, attr, filePath, fileContent, calls, warnings);
+    return;
+  }
+  if (ast instanceof Binary) {
+    visitForTPipes(ast.left, attr, filePath, fileContent, calls, warnings);
+    visitForTPipes(ast.right, attr, filePath, fileContent, calls, warnings);
+    return;
+  }
+  if (ast instanceof PrefixNot || ast instanceof NonNullAssert) {
+    visitForTPipes(ast.expression, attr, filePath, fileContent, calls, warnings);
+    return;
+  }
+  if (ast instanceof LiteralArray) {
+    // LiteralArray.expressions is typed `any[]` in @angular/compiler — narrow per-element.
+    for (const expr of ast.expressions as unknown[]) {
+      if (expr instanceof AST) visitForTPipes(expr, attr, filePath, fileContent, calls, warnings);
+    }
+    return;
+  }
+  if (ast instanceof LiteralMap) {
+    // LiteralMap.values is typed `any[]` in @angular/compiler — narrow per-element.
+    for (const value of ast.values as unknown[]) {
+      if (value instanceof AST) visitForTPipes(value, attr, filePath, fileContent, calls, warnings);
+    }
+    return;
+  }
+  if (ast instanceof Call || ast instanceof SafeCall) {
+    visitForTPipes(ast.receiver, attr, filePath, fileContent, calls, warnings);
+    for (const arg of ast.args) visitForTPipes(arg, attr, filePath, fileContent, calls, warnings);
+    return;
+  }
+  if (
+    ast instanceof PropertyRead ||
+    ast instanceof SafePropertyRead ||
+    ast instanceof KeyedRead ||
+    ast instanceof SafeKeyedRead
+  ) {
+    visitForTPipes(ast.receiver, attr, filePath, fileContent, calls, warnings);
+    if ((ast instanceof KeyedRead || ast instanceof SafeKeyedRead) && ast.key) {
+      visitForTPipes(ast.key, attr, filePath, fileContent, calls, warnings);
+    }
+    return;
+  }
+  // LiteralPrimitive, ImplicitReceiver, ThisReceiver — leaves; nothing to recurse into.
 }
 
 function parseOptionsArg(arg: unknown): {

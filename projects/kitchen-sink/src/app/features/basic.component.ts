@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { LinguiService, TPipe, TDirective } from '@tocdk/lingui-angular';
 import { DemoPageComponent } from '../shared/demo-page.component';
 
@@ -7,7 +7,7 @@ import { DemoPageComponent } from '../shared/demo-page.component';
   standalone: true,
   imports: [DemoPageComponent, TPipe, TDirective],
   template: `
-    <app-demo-page title="basic">
+    <app-demo-page title="Basic">
       <div rendered>
         <p>LinguiService.t(): <strong>{{ greeting() }}</strong></p>
         <h3>{{ 'Welcome' | t }}</h3>
@@ -18,5 +18,5 @@ import { DemoPageComponent } from '../shared/demo-page.component';
 })
 export default class BasicComponent {
   private readonly lingui = inject(LinguiService);
-  protected greeting = computed(() => this.lingui.t('Hello'));
+  protected greeting = this.lingui.t$('Hello');
 }

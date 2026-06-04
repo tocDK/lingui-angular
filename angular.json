@@ -42,7 +42,8 @@
             "polyfills": [],
             "tsConfig": "projects/kitchen-sink/tsconfig.app.json",
             "assets": [],
-            "styles": ["projects/kitchen-sink/src/styles.css"]
+            "styles": ["projects/kitchen-sink/src/styles.scss"],
+            "inlineStyleLanguage": "scss"
           },
           "configurations": {
             "production": {

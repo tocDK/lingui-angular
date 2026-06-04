@@ -1,10 +1,9 @@
 /**
  * Sidenav data for AppComponent.
  *
- * Currently flat — matches the pre-redesign layout. Task 6 of the docs-redesign
- * plan replaces NAV with a categorized `NavSection[]` (Getting started /
- * Services / Pipes / Directives / SSR / Guides). The type contract is
- * stable from this task forward.
+ * Categorized into NavSection[] (Getting started / Services / Pipes /
+ * Directives / SSR / Guides). The flat `NAV` export is kept as a
+ * backwards-compat alias derived from NAV_SECTIONS.
  */
 
 export interface NavItem {
@@ -13,21 +12,53 @@ export interface NavItem {
 }
 
 export interface NavSection {
-  /** null = no subheader (legacy/flat fallback). */
-  readonly title: string | null;
+  readonly title: string;
   readonly items: readonly NavItem[];
 }
 
-// Current flat structure — replaced in Task 6 with categorized sections.
-export const NAV: readonly NavItem[] = [
-  { path: '/basic', label: 'Basic' },
-  { path: '/params', label: 'Params' },
-  { path: '/plural', label: 'Plural' },
-  { path: '/select', label: 'Select' },
-  { path: '/context', label: 'Context' },
-  { path: '/explicit-id', label: 'Explicit IDs' },
-  { path: '/lazy', label: 'Lazy' },
-  { path: '/ssr', label: 'SSR' },
-  { path: '/cd', label: 'Change det.' },
-  { path: '/missing', label: 'Missing' },
+export const NAV_SECTIONS: readonly NavSection[] = [
+  {
+    title: 'Getting started',
+    items: [
+      { path: '/getting-started', label: 'Quick start' },
+    ],
+  },
+  {
+    title: 'Services',
+    items: [
+      { path: '/services/lingui-service', label: 'LinguiService' },
+    ],
+  },
+  {
+    title: 'Pipes',
+    items: [
+      { path: '/pipes/t-pipe', label: 'TPipe' },
+      { path: '/pipes/t-plural-pipe', label: 'TPluralPipe' },
+      { path: '/pipes/t-select-pipe', label: 'TSelectPipe' },
+    ],
+  },
+  {
+    title: 'Directives',
+    items: [
+      { path: '/directives/t-directive', label: 'TDirective' },
+    ],
+  },
+  {
+    title: 'SSR',
+    items: [
+      { path: '/ssr/provide-lingui-ssr', label: 'provideLingui (SSR)' },
+    ],
+  },
+  {
+    title: 'Guides',
+    items: [
+      { path: '/guides/lazy-loading', label: 'Lazy catalog loading' },
+      { path: '/guides/change-detection', label: 'Change detection' },
+      { path: '/guides/missing-translations', label: 'Missing translations' },
+    ],
+  },
 ];
+
+// Backwards-compat alias for code still importing `NAV` from this file.
+// Remove once no consumers reference NAV.
+export const NAV: readonly NavItem[] = NAV_SECTIONS.flatMap((s) => s.items);

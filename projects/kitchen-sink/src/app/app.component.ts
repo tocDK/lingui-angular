@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { LocaleSwitcherComponent } from './shared/locale-switcher.component';
 import { StatusBarComponent } from './shared/status-bar.component';
 import { ThemeToggleComponent } from './shared/theme-toggle.component';
-import { NAV } from './shared/app-nav';
+import { NAV_SECTIONS } from './shared/app-nav';
 
 @Component({
   selector: 'app-root',
@@ -38,14 +38,18 @@ import { NAV } from './shared/app-nav';
         class="app-sidenav"
       >
         <mat-nav-list>
-          @for (item of nav; track item.path) {
-            <a
-              mat-list-item
-              [routerLink]="item.path"
-              routerLinkActive="active"
-              (click)="onNavClick(sidenav)"
-              >{{ item.label }}</a
-            >
+          @for (section of navSections; track section.title) {
+            <h3 matSubheader>{{ section.title }}</h3>
+            @for (item of section.items; track item.path) {
+              <a
+                mat-list-item
+                [routerLink]="item.path"
+                routerLinkActive="active"
+                [routerLinkActiveOptions]="{ exact: true }"
+                (click)="onNavClick(sidenav)"
+                >{{ item.label }}</a
+              >
+            }
           }
         </mat-nav-list>
       </mat-sidenav>
@@ -114,7 +118,7 @@ import { NAV } from './shared/app-nav';
 })
 export class AppComponent {
   private readonly observer = inject(BreakpointObserver);
-  protected readonly nav = NAV;
+  protected readonly navSections = NAV_SECTIONS;
   protected readonly isHandset = toSignal(
     this.observer.observe('(max-width: 959.98px)').pipe(map((s) => s.matches)),
     { initialValue: false },

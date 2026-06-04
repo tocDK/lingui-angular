@@ -31,7 +31,13 @@ jobs:
         run: npm run build:lib
 
       - name: Build demo (with GH Pages base href)
-        run: npx ng build kitchen-sink --configuration=production --base-href "/lingui-angular/"
+        # `npm run build:demo` bakes in --base-href "/lingui-angular/" AND
+        # fires the prebuild:demo hook that runs the example-source codegen
+        # (generates the gitignored examples/sources.generated.ts that the
+        # LinguiExampleComponent imports). Calling npx ng build directly
+        # skips both — the codegen is required or the build fails with
+        # "Could not resolve '../examples/sources.generated'".
+        run: npm run build:demo
 
       - name: Promote CSR shell to index.html + SPA 404 fallback
         # The @angular/build:application builder emits the SPA shell as

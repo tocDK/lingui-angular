@@ -7,7 +7,7 @@ import {
   signal,
   Type,
 } from '@angular/core';
-import { NgComponentOutlet, ViewportScroller } from '@angular/common';
+import { ViewportScroller } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 
@@ -47,7 +47,6 @@ interface TocItem {
   selector: 'app-api-page',
   standalone: true,
   imports: [
-    NgComponentOutlet,
     MatTabsModule,
     ApiItemCardComponent,
     LinguiExampleComponent,
@@ -80,14 +79,13 @@ interface TocItem {
                 </section>
               }
               @for (key of content().overview.examples; track key) {
-                <app-lingui-example
-                  [sourceKey]="key"
-                  [title]="exampleTitle(key)"
-                >
-                  <ng-container
-                    *ngComponentOutlet="exampleComponent(key)!"
+                @if (exampleComponent(key); as cmp) {
+                  <app-lingui-example
+                    [sourceKey]="key"
+                    [title]="exampleTitle(key)"
+                    [exampleComponent]="cmp"
                   />
-                </app-lingui-example>
+                }
               }
             </div>
             <app-page-contents [items]="overviewItems()" />
@@ -118,16 +116,15 @@ interface TocItem {
           <div class="page-body">
             <div class="page-main">
               @for (ex of content().examples; track ex.key) {
-                <app-lingui-example
-                  [sourceKey]="ex.key"
-                  [title]="ex.title"
-                  [showCatalog]="ex.showCatalog ?? false"
-                  [defaultExpanded]="true"
-                >
-                  <ng-container
-                    *ngComponentOutlet="exampleComponent(ex.key)!"
+                @if (exampleComponent(ex.key); as cmp) {
+                  <app-lingui-example
+                    [sourceKey]="ex.key"
+                    [title]="ex.title"
+                    [exampleComponent]="cmp"
+                    [showCatalog]="ex.showCatalog ?? false"
+                    [defaultExpanded]="true"
                   />
-                </app-lingui-example>
+                }
               }
             </div>
             <app-page-contents [items]="examplesItems()" />

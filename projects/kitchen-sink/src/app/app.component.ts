@@ -8,8 +8,6 @@ import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { LocaleSwitcherComponent } from './shared/locale-switcher.component';
-import { StatusBarComponent } from './shared/status-bar.component';
 import { ThemeToggleComponent } from './shared/theme-toggle.component';
 import { NAV_SECTIONS } from './shared/app-nav';
 
@@ -25,8 +23,6 @@ import { NAV_SECTIONS } from './shared/app-nav';
     MatListModule,
     MatIconModule,
     MatButtonModule,
-    LocaleSwitcherComponent,
-    StatusBarComponent,
     ThemeToggleComponent,
   ],
   template: `
@@ -68,16 +64,11 @@ import { NAV_SECTIONS } from './shared/app-nav';
           <span class="app-title">&commat;tocdk/lingui-angular kitchen sink</span>
           <span class="spacer"></span>
           <app-theme-toggle />
-          <app-locale-switcher />
         </mat-toolbar>
 
         <main class="app-main">
           <router-outlet />
         </main>
-
-        <mat-toolbar class="app-footer">
-          <app-status-bar />
-        </mat-toolbar>
       </mat-sidenav-content>
     </mat-sidenav-container>
   `,
@@ -106,12 +97,7 @@ import { NAV_SECTIONS } from './shared/app-nav';
       }
       .app-main {
         padding: 1rem;
-        min-height: calc(100vh - 64px - 48px);
-      }
-      .app-footer {
-        min-height: 48px;
-        height: 48px;
-        padding: 0 1rem;
+        min-height: calc(100vh - 64px);
       }
     `,
   ],

@@ -1,22 +1,17 @@
 import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { LinguiService } from '@tocdk/lingui-angular';
-import { DemoPageComponent } from '../shared/demo-page.component';
 
 @Component({
-  selector: 'app-cd',
+  selector: 'app-example-cd',
   standalone: true,
-  imports: [DemoPageComponent],
+  imports: [],
   template: `
-    <app-demo-page title="cd">
-      <div rendered>
-        <p>Signal-driven change detection — updates every second without zone.js:</p>
-        <p>{{ message() }}</p>
-        <p><em>Locale: {{ lingui.locale() }}</em></p>
-      </div>
-    </app-demo-page>
+    <p>Signal-driven change detection — updates every second without zone.js:</p>
+    <p>{{ message() }}</p>
+    <p><em>Locale: {{ lingui.locale() }}</em></p>
   `,
 })
-export default class CdComponent implements OnDestroy {
+export class CdExample implements OnDestroy {
   protected readonly lingui = inject(LinguiService);
   protected n = signal(0);
   protected message = computed(() => {

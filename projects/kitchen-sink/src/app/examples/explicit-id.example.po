@@ -1,0 +1,8 @@
+# Excerpt of da.po. With $id, the catalog is keyed by the explicit id
+# ("auth.welcome") rather than the source message ("Welcome").
+# lingui compile --typescript hashes the id at build time and the
+# runtime looks up by the hashed key.
+
+# Source PO entry (authored):
+msgid "auth.welcome"
+msgstr "Velkommen (DA — via $id)"

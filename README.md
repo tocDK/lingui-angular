@@ -42,7 +42,7 @@ Angular 20+ bindings for [Lingui](https://lingui.dev/) — write English in sour
 | Version | Scope |
 |---|---|
 | `v0.1.0` (released) | Runtime, extractor, kitchen-sink demo, CI, MIT license |
-| `v0.2.0` (shipping) | ✅ GitHub Pages deployment of the kitchen-sink ([live](https://tocdk.github.io/lingui-angular/)); ✅ Material 3 redesign of the demo shell; HTML-comment extraction (`<!-- i18n: ... -->`); Playwright e2e against the demo |
+| `v0.2.0` (shipping) | ✅ GitHub Pages deployment of the kitchen-sink ([live](https://tocdk.github.io/lingui-angular/)); ✅ Material 3 redesign of the demo shell; ✅ kitchen-sink restructured as a Material-style docs site (per-primitive pages with Overview / API / Examples tabs and inline source-code reveal); HTML-comment extraction (`<!-- i18n: ... -->`); Playwright e2e against the demo |
 | `v1.0.0` (criteria) | First external user OR 4 weeks of dogfooding without API change; npm publish as `@tocdk/lingui-angular` becomes an option |
 
 Open an issue if you have a use-case that isn't covered.

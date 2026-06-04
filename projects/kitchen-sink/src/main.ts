@@ -1,7 +1,7 @@
 import { bootstrapApplication, provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideLingui } from '@tocdk/lingui-angular';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
@@ -10,7 +10,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideZonelessChangeDetection(),
     provideAnimationsAsync(),
-    provideRouter(routes),
+    provideRouter(routes, withComponentInputBinding()),
     provideClientHydration(),
     provideLingui({
       sourceLocale: 'en',

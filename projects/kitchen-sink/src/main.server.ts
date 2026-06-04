@@ -2,7 +2,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideServerRendering } from '@angular/ssr';
 import { APP_INITIALIZER, TransferState, inject, provideZonelessChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
   DEFAULT_SSR_TRANSFER_KEY,
   LinguiService,
@@ -17,7 +17,7 @@ const bootstrap = () =>
     providers: [
       provideZonelessChangeDetection(),
       provideAnimationsAsync(),
-      provideRouter(routes),
+      provideRouter(routes, withComponentInputBinding()),
       provideServerRendering(),
       provideLingui({
         sourceLocale: 'en',

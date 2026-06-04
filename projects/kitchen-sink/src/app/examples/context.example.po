@@ -1,0 +1,13 @@
+# Excerpt of da.po. Note: in the esbuild pipeline (no Babel macro),
+# the | t pipe's $context option is an extraction hint only — it does
+# not change the runtime lookup key. Both "Open" pipes resolve to the
+# same msgid below. A separate msgctxt block would be needed to give
+# them distinct translations.
+
+msgid "Open"
+msgstr "Åbn"
+
+# Hypothetical disambiguated entry (not currently in da.po):
+# msgctxt "verb"
+# msgid "Open"
+# msgstr "Åbn (verb)"

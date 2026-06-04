@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { LinguiService, TPipe } from '@tocdk/lingui-angular';
 import { DemoPageComponent } from '../shared/demo-page.component';
 
@@ -29,6 +29,9 @@ import { DemoPageComponent } from '../shared/demo-page.component';
 export default class ContextComponent {
   private readonly lingui = inject(LinguiService);
   // Runtime: $context is extraction-only; both resolve to the same catalog key.
-  protected verb = computed(() => this.lingui.t('Open'));
-  protected adj = computed(() => this.lingui.t('Open'));
+  // Use t$ (not computed+t) so the template registers a locale-signal dep —
+  // without that, host CD never runs on locale change and sibling | t pipes
+  // stay frozen.
+  protected verb = this.lingui.t$('Open');
+  protected adj = this.lingui.t$('Open');
 }

@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { LinguiService, TPipe } from '@tocdk/lingui-angular';
 import { DemoPageComponent } from '../shared/demo-page.component';
 
@@ -17,7 +17,11 @@ import { DemoPageComponent } from '../shared/demo-page.component';
 })
 export default class ExplicitIdComponent {
   private readonly lingui = inject(LinguiService);
-  protected welcomeTs = computed(() =>
-    this.lingui.t({ id: 'auth.welcome', message: 'Welcome' }),
-  );
+  // Use t$ (not computed+t) so the template registers a locale-signal dep —
+  // without that, host CD never runs on locale change and the sibling | t pipe
+  // stays frozen.
+  protected welcomeTs = this.lingui.t$({
+    id: 'auth.welcome',
+    message: 'Welcome',
+  });
 }

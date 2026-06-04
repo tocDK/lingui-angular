@@ -133,6 +133,6 @@ export class AppComponent {
   );
 
   protected onNavClick(sidenav: MatSidenav): void {
-    if (this.isHandset()) sidenav.close();
+    if (this.isHandset()) void sidenav.close();
   }
 }

@@ -26,6 +26,6 @@ export class LocaleSwitcherComponent {
   protected readonly lingui = inject(LinguiService);
 
   protected onChange(event: MatButtonToggleChange): void {
-    this.lingui.activate(event.value);
+    void this.lingui.activate(event.value as string);
   }
 }

@@ -146,6 +146,70 @@ describe('walkTemplate — control-flow.html', () => {
   });
 });
 
+describe('walkTemplate — bound-attribute pipe form', () => {
+  it('extracts t pipe from bound attribute [label]', () => {
+    const source = `<p-button [label]="'Log in' | t" />`;
+    const { calls, warnings } = walkTemplate(source, 'test.html');
+    expect(warnings).toEqual([]);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ kind: 't', message: 'Log in' });
+  });
+
+  it('extracts t pipe from [attr.title]', () => {
+    const source = `<span [attr.title]="'Required field' | t">*</span>`;
+    const { calls, warnings } = walkTemplate(source, 'test.html');
+    expect(warnings).toEqual([]);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ kind: 't', message: 'Required field' });
+  });
+
+  it('extracts t pipe from [attr.aria-label]', () => {
+    const source = `<button [attr.aria-label]="'Dismiss error' | t"></button>`;
+    const { calls, warnings } = walkTemplate(source, 'test.html');
+    expect(warnings).toEqual([]);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ kind: 't', message: 'Dismiss error' });
+  });
+
+  it('warns when bound-attribute t pipe receives non-literal', () => {
+    const source = `<p-button [label]="someSignal() | t" />`;
+    const { calls, warnings } = walkTemplate(source, 'test.html');
+    expect(calls).toEqual([]);
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0].reason).toMatch(/string literal/i);
+  });
+
+  it('still extracts from [t] directive form (no regression)', () => {
+    const source = `<button [t]="'Sign in'"></button>`;
+    const { calls, warnings } = walkTemplate(source, 'test.html');
+    expect(warnings).toEqual([]);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ kind: 't', message: 'Sign in' });
+  });
+
+  it('extracts t pipe from multiple bound attributes on same element', () => {
+    const source = `<p-button [label]="'Save' | t" [attr.title]="'Save changes' | t" />`;
+    const { calls, warnings } = walkTemplate(source, 'test.html');
+    expect(warnings).toEqual([]);
+    expect(calls).toHaveLength(2);
+    expect(calls.map((c) => c.message).sort()).toEqual(['Save', 'Save changes']);
+  });
+
+  it('does not warn or extract for a bound attribute with no t pipe', () => {
+    const source = `<p-button [label]="someSignal()" />`;
+    const { calls, warnings } = walkTemplate(source, 'test.html');
+    expect(calls).toEqual([]);
+    expect(warnings).toEqual([]);
+  });
+
+  it('extracts t pipe even when nested inside another pipe like uppercase', () => {
+    const source = `<p-button [label]="'Save' | t | uppercase" />`;
+    const { calls } = walkTemplate(source, 'test.html');
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ kind: 't', message: 'Save' });
+  });
+});
+
 describe('walkTemplate — chained pipes', () => {
   it("silently skips {{ 'X' | t | uppercase }} (outermost is not t)", () => {
     const result = walkTemplate(`<p>{{ 'X' | t | uppercase }}</p>`, 'chain1.html');

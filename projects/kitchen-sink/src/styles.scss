@@ -132,6 +132,12 @@ pre[class*='language-'] {
   font-size: 1rem;
 }
 .example-header .spacer { flex: 1 1 auto; }
+.example-header .example-locale-switcher {
+  margin-right: 0.5rem;
+  /* mat-button-toggle-group has a default density that lines up nicely
+     with the icon-buttons in the header; nothing extra needed beyond a
+     small right margin. */
+}
 .example-demo {
   padding: 1rem;
 }

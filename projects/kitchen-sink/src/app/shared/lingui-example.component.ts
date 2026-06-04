@@ -5,8 +5,9 @@ import {
   input,
   linkedSignal,
   PLATFORM_ID,
+  Type,
 } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { NgComponentOutlet, isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,23 +17,40 @@ import 'prismjs/components/prism-typescript';
 import 'prismjs/components/prism-ini';
 
 import { SOURCES } from '../examples/sources.generated';
+import { provideExampleLingui } from './example-lingui.config';
+import { LocaleSwitcherComponent } from './locale-switcher.component';
 
 /**
- * Reusable example card. The host page provides the rendered demo via
- * `<ng-content>`; this component supplies the chrome (title bar, copy-link
- * button, source toggle) and the expandable source pane wired up to
- * `SOURCES[sourceKey()]` — both the compiled `.ts` and, when `showCatalog`
- * is set, the matching `.po` fragment, both Prism-highlighted.
+ * Reusable example card.
+ *
+ * Provides its OWN `LinguiService` via `provideExampleLingui()`, so
+ * each card has an independent locale. Switching DA on one card no
+ * longer flips locale on every other card. The card's locale switcher
+ * (in the header) and the example component rendered via
+ * `*ngComponentOutlet` both inject the card-scoped LinguiService.
+ *
+ * The example is rendered via `*ngComponentOutlet` inside the card's
+ * template (NOT via `<ng-content>`) so that providers declared on this
+ * component reach it through the injector lookup.
  */
 @Component({
   selector: 'app-lingui-example',
   standalone: true,
-  imports: [MatCardModule, MatIconModule, MatButtonModule, MatSnackBarModule],
+  imports: [
+    NgComponentOutlet,
+    MatCardModule,
+    MatIconModule,
+    MatButtonModule,
+    MatSnackBarModule,
+    LocaleSwitcherComponent,
+  ],
+  providers: [...provideExampleLingui()],
   template: `
     <mat-card appearance="outlined" class="example-card" [id]="sourceKey()">
       <div class="example-header">
         <span class="title">{{ title() }}</span>
         <span class="spacer"></span>
+        <app-locale-switcher class="example-locale-switcher" />
         <button
           mat-icon-button
           type="button"
@@ -52,7 +70,7 @@ import { SOURCES } from '../examples/sources.generated';
         </button>
       </div>
       <div class="example-demo">
-        <ng-content />
+        <ng-container *ngComponentOutlet="exampleComponent()" />
       </div>
       @if (expanded() && sources(); as src) {
         <div class="example-source">
@@ -82,6 +100,7 @@ import { SOURCES } from '../examples/sources.generated';
 export class LinguiExampleComponent {
   readonly title = input.required<string>();
   readonly sourceKey = input.required<string>();
+  readonly exampleComponent = input.required<Type<unknown>>();
   readonly showCatalog = input<boolean>(false);
   readonly defaultExpanded = input<boolean>(false);
 

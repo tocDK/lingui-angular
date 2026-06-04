@@ -11,19 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { LocaleSwitcherComponent } from './shared/locale-switcher.component';
 import { StatusBarComponent } from './shared/status-bar.component';
 import { ThemeToggleComponent } from './shared/theme-toggle.component';
-
-const NAV = [
-  { path: '/basic', label: 'Basic' },
-  { path: '/params', label: 'Params' },
-  { path: '/plural', label: 'Plural' },
-  { path: '/select', label: 'Select' },
-  { path: '/context', label: 'Context' },
-  { path: '/explicit-id', label: 'Explicit IDs' },
-  { path: '/lazy', label: 'Lazy' },
-  { path: '/ssr', label: 'SSR' },
-  { path: '/cd', label: 'Change det.' },
-  { path: '/missing', label: 'Missing' },
-] as const;
+import { NAV } from './shared/app-nav';
 
 @Component({
   selector: 'app-root',

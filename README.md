@@ -119,13 +119,12 @@ bootstrapApplication(AppComponent, {
     provideRouter(routes),
     provideLingui({
       sourceLocale: 'en',
-      locales: ['en', 'fr', 'da', 'es'],
+      // two-language demo — add locales as needed
+      locales: ['en', 'da'],
       loader: async (locale) => {
         // Import pre-compiled .ts catalogs (run `lingui compile --typescript` first)
         switch (locale) {
-          case 'fr': return import('./locales/fr');
           case 'da': return import('./locales/da');
-          case 'es': return import('./locales/es');
           default:   return import('./locales/en');
         }
       },

@@ -54,12 +54,12 @@ Expected: completes without error.
 - [ ] **Step 4: Confirm the artifact location**
 
 ```bash
-ls dist/kitchen-sink/browser/index.html dist/kitchen-sink/browser/main-*.js
+ls dist/kitchen-sink/browser/index.csr.html dist/kitchen-sink/browser/main.js
 ```
 
-Expected: both files exist.
+Expected: both files exist. (The SPA shell ships as `index.csr.html` because SSR is enabled in `angular.json` for the kitchen-sink target. The workflow in Task 13 renames it to `index.html` + `404.html`.)
 
-**If the path differs** (e.g., `dist/kitchen-sink/` without `browser/`, or `dist/apps/kitchen-sink/`): note the actual path. Task 13 must use that path everywhere — both for `upload-pages-artifact` and the SPA-404 `cp` step.
+**If the path differs** (e.g., `dist/kitchen-sink/` without `browser/`, or `dist/apps/kitchen-sink/`): note the actual path. Task 13 must use that path everywhere — both for `upload-pages-artifact` and the rename step.
 
 - [ ] **Step 5: Clean the dist tree** (so later tasks start fresh)
 
@@ -764,13 +764,15 @@ npx ng build kitchen-sink --configuration=production --base-href "/lingui-angula
 
 Expected: both complete without errors.
 
-- [ ] **Step 3: Confirm artifact shape**
+- [ ] **Step 3: Confirm artifact shape + apply Pages rename**
 
 ```bash
-ls dist/kitchen-sink/browser/index.html dist/kitchen-sink/browser/main-*.js
+ls dist/kitchen-sink/browser/index.csr.html dist/kitchen-sink/browser/main.js
+cp dist/kitchen-sink/browser/index.csr.html dist/kitchen-sink/browser/index.html
+cp dist/kitchen-sink/browser/index.csr.html dist/kitchen-sink/browser/404.html
 ```
 
-Expected: both present. If path differs from Task 1, **stop and update Task 13's workflow** before continuing.
+Expected: source files exist; copies succeed.
 
 - [ ] **Step 4: Serve and visit**
 
@@ -844,8 +846,14 @@ jobs:
         run: npm run build:lib
       - name: Build demo (with GH Pages base href)
         run: npx ng build kitchen-sink --configuration=production --base-href "/lingui-angular/"
-      - name: SPA 404 fallback
-        run: cp dist/kitchen-sink/browser/index.html dist/kitchen-sink/browser/404.html
+      - name: Promote CSR shell to index.html + SPA 404 fallback
+        # The @angular/build:application builder emits the SPA shell as
+        # index.csr.html when SSR is enabled in the build config. Rename it
+        # to index.html (GH Pages default) and duplicate as 404.html so
+        # deep links survive a hard refresh.
+        run: |
+          cp dist/kitchen-sink/browser/index.csr.html dist/kitchen-sink/browser/index.html
+          cp dist/kitchen-sink/browser/index.csr.html dist/kitchen-sink/browser/404.html
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

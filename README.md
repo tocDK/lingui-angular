@@ -5,6 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Angular 20+](https://img.shields.io/badge/angular-20%2B-dd0031.svg)](https://angular.dev/)
 
+> 🎮 **Live demo: [tocdk.github.io/lingui-angular](https://tocdk.github.io/lingui-angular/)** — the kitchen-sink running on GitHub Pages. Try the EN/DA locale toggle and the light/dark theme toggle.
+
 Angular 20+ bindings for [Lingui](https://lingui.dev/) — write English in source, extract via AST, ship PO catalogs. Signal-only, zoneless, standalone-first.
 
 ---
@@ -40,7 +42,7 @@ Angular 20+ bindings for [Lingui](https://lingui.dev/) — write English in sour
 | Version | Scope |
 |---|---|
 | `v0.1.0` (released) | Runtime, extractor, kitchen-sink demo, CI, MIT license |
-| `v0.2.0` (planned) | GitHub Pages deployment of the kitchen-sink, HTML-comment extraction (`<!-- i18n: ... -->`), Playwright e2e against the demo |
+| `v0.2.0` (shipping) | ✅ GitHub Pages deployment of the kitchen-sink ([live](https://tocdk.github.io/lingui-angular/)); ✅ Material 3 redesign of the demo shell; HTML-comment extraction (`<!-- i18n: ... -->`); Playwright e2e against the demo |
 | `v1.0.0` (criteria) | First external user OR 4 weeks of dogfooding without API change; npm publish as `@tocdk/lingui-angular` becomes an option |
 
 Open an issue if you have a use-case that isn't covered.

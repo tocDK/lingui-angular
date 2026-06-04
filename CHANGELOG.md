@@ -9,10 +9,21 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+[Unreleased]: https://github.com/tocDK/lingui-angular/compare/v0.2.0...HEAD
+
+## [0.2.0]
+
+### Added
+- **GitHub Pages deployment** of the kitchen-sink demo at [tocdk.github.io/lingui-angular](https://tocdk.github.io/lingui-angular/). Auto-deploys on push to `main`. The SPA `index.csr.html` shell is promoted to `index.html` and duplicated as `404.html` so deep links survive a hard refresh.
+- **Material 3 redesign** of the kitchen-sink shell — Angular Material toolbar, sidenav (`side`/`over` responsive at 960px), card wrappers per feature page, `mat-button-toggle-group` locale switcher, and a new light/dark theme toggle (persisted to `localStorage`, no FOUC). Rose primary / sage tertiary palette. Demo-only — the published library remains zero-runtime-dependency; `@angular/material` and `@angular/cdk` live in `devDependencies`.
+
+### Fixed
+- `basic.component`: the `LinguiService.t('Hello')` row now swaps to Danish on DA toggle. Previously wrapped in `computed(() => this.lingui.t('Hello'))` — the callback didn't read the locale signal, so the computed never recomputed. Switched to the reactive `t$('Hello')` form. The pipe and directive paths in the same component were already correct.
+
 ### Changed
 - kitchen-sink demo trimmed from 4 locales (en/fr/da/es) to 2 (en/da). Simpler scan: any future translation-pipeline regression is visible at a glance via the EN↔DA toggle.
 
-[Unreleased]: https://github.com/tocDK/lingui-angular/compare/v0.1.2...HEAD
+[0.2.0]: https://github.com/tocDK/lingui-angular/releases/tag/v0.2.0
 
 ## [0.1.2] — 2026-06-04
 

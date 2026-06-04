@@ -1,0 +1,58 @@
+name: deploy-pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build library (peer for the demo)
+        run: npm run build:lib
+
+      - name: Build demo (with GH Pages base href)
+        run: npx ng build kitchen-sink --configuration=production --base-href "/lingui-angular/"
+
+      - name: Promote CSR shell to index.html + SPA 404 fallback
+        # The @angular/build:application builder emits the SPA shell as
+        # index.csr.html when SSR is enabled in the build config. Rename it
+        # to index.html (GH Pages default) and duplicate as 404.html so
+        # deep links survive a hard refresh on Pages.
+        run: |
+          cp dist/kitchen-sink/browser/index.csr.html dist/kitchen-sink/browser/index.html
+          cp dist/kitchen-sink/browser/index.csr.html dist/kitchen-sink/browser/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/kitchen-sink/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,25 +1,20 @@
 import { Component, TransferState, inject, makeStateKey, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DEFAULT_SSR_TRANSFER_KEY, LinguiService, TPipe } from '@tocdk/lingui-angular';
-import { DemoPageComponent } from '../shared/demo-page.component';
 
 @Component({
-  selector: 'app-ssr',
+  selector: 'lingui-example-ssr',
   standalone: true,
-  imports: [DemoPageComponent, TPipe],
+  imports: [TPipe],
   template: `
-    <app-demo-page title="ssr">
-      <div rendered>
-        <p>Rendered on: <strong>{{ where }}</strong></p>
-        <p>Active locale: <strong>{{ lingui.locale() }}</strong></p>
-        <p>Catalog hydrated from TransferState: <strong>{{ hydratedFromTransferState }}</strong></p>
-        <p>{{ 'Server-side rendering demo' | t }}</p>
-        <p><em>View page source — the translated content above is already in the HTML, no client-side fetch.</em></p>
-      </div>
-    </app-demo-page>
+    <p>Rendered on: <strong>{{ where }}</strong></p>
+    <p>Active locale: <strong>{{ lingui.locale() }}</strong></p>
+    <p>Catalog hydrated from TransferState: <strong>{{ hydratedFromTransferState }}</strong></p>
+    <p>{{ 'Server-side rendering demo' | t }}</p>
+    <p><em>View page source — the translated content above is already in the HTML, no client-side fetch.</em></p>
   `,
 })
-export default class SsrComponent {
+export class SsrExample {
   protected readonly where = isPlatformBrowser(inject(PLATFORM_ID)) ? 'client' : 'server';
   protected readonly lingui = inject(LinguiService);
   // On the client, if the TransferState had a catalog payload, the LinguiService

@@ -1,0 +1,12 @@
+# Excerpt of da.po — entries used by the Basic example.
+# (Lingui-compiled hashes are not shown here; see the compiled da.ts
+# for runtime lookup details.)
+
+msgid "Hello"
+msgstr "Hej"
+
+msgid "Welcome"
+msgstr "Velkommen"
+
+msgid "About"
+msgstr "Om"

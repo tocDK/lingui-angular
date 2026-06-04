@@ -37,3 +37,167 @@ html, body {
 
 .demo-card { margin: 1rem 0; }
 .demo-card mat-card-content.demo-rendered { padding-top: 1rem; }
+
+/* ───── Prism syntax theme (Material 3 token-driven) ───── */
+pre[class*='language-'],
+code[class*='language-'] {
+  font-family:
+    ui-monospace, SFMono-Regular, 'JetBrains Mono', Menlo, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+pre[class*='language-'] {
+  margin: 0;
+  padding: 1rem;
+  overflow-x: auto;
+  background: var(--mat-sys-surface-container-low);
+  color: var(--mat-sys-on-surface);
+  border-radius: 8px;
+}
+
+/* Token colors — neutral defaults that read well on both light + dark */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata { color: var(--mat-sys-on-surface-variant); font-style: italic; }
+.token.punctuation { color: var(--mat-sys-on-surface-variant); }
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted { color: var(--mat-sys-error); }
+.token.string,
+.token.char,
+.token.attr-value,
+.token.builtin,
+.token.inserted { color: var(--mat-sys-tertiary); }
+.token.operator,
+.token.entity,
+.token.url,
+.token.variable { color: var(--mat-sys-on-surface); }
+.token.keyword,
+.token.atrule,
+.token.attr-name { color: var(--mat-sys-primary); font-weight: 500; }
+.token.function,
+.token.class-name { color: var(--mat-sys-primary); }
+.token.regex,
+.token.important { color: var(--mat-sys-error); }
+
+/* ───── Prose typography for markdown-renderer ───── */
+.prose {
+  line-height: 1.6;
+  max-width: 70ch;
+}
+.prose h2 {
+  margin: 1.5rem 0 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+.prose h3 {
+  margin: 1.25rem 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+.prose p {
+  margin: 0 0 1rem;
+}
+.prose code:not([class*='language-']) {
+  background: var(--mat-sys-surface-container-low);
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.prose ul, .prose ol {
+  padding-left: 1.25rem;
+  margin: 0.5rem 0 1rem;
+}
+.prose li { margin: 0.25rem 0; }
+
+/* ───── Example card chrome ───── */
+.example-card {
+  margin: 1rem 0;
+}
+.example-header {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+.example-header .title {
+  font-weight: 500;
+  font-size: 1rem;
+}
+.example-header .spacer { flex: 1 1 auto; }
+.example-demo {
+  padding: 1rem;
+}
+.example-source {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 1rem 1rem;
+}
+.source-file header {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.75rem;
+  opacity: 0.7;
+  padding: 0.25rem 0;
+}
+
+/* ───── API item card ───── */
+.api-item {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  background: var(--mat-sys-surface);
+}
+.api-item .signature {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.9rem;
+  background: var(--mat-sys-surface-container-low);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+}
+
+/* ───── Right-rail TOC ───── */
+.page-contents {
+  position: sticky;
+  top: 5rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+.page-contents header {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+.page-contents ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-left: 1px solid var(--mat-sys-outline-variant);
+}
+.page-contents li {
+  padding: 0.25rem 0 0.25rem 0.75rem;
+  border-left: 2px solid transparent;
+  margin-left: -1px;
+}
+.page-contents li.active {
+  border-left-color: var(--mat-sys-primary);
+}
+.page-contents li.active a {
+  color: var(--mat-sys-primary);
+}
+.page-contents a {
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: none;
+}
+.page-contents a:hover {
+  color: var(--mat-sys-on-surface);
+}

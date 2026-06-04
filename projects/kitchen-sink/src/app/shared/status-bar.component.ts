@@ -5,12 +5,20 @@ import { LinguiService } from '@tocdk/lingui-angular';
   selector: 'app-status-bar',
   standalone: true,
   template: `
-    <small>
+    <span class="status-bar">
       active: <strong>{{ lingui.locale() }}</strong>
       · loading: {{ lingui.loading() }}
       · source: {{ lingui.sourceLocale }}
-    </small>
+    </span>
   `,
+  styles: [
+    `
+      .status-bar {
+        font-size: 0.85rem;
+        opacity: 0.85;
+      }
+    `,
+  ],
 })
 export class StatusBarComponent {
   protected readonly lingui = inject(LinguiService);

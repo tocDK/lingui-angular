@@ -1,5 +1,6 @@
 import { Injector, TransferState, effect, makeStateKey, provideZonelessChangeDetection, runInInjectionContext } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { generateMessageId } from '@lingui/message-utils/generateMessageId';
 import { describe, expect, it, vi } from 'vitest';
 import { LinguiUnknownLocaleError } from './errors';
 import type { LinguiConfig } from './lingui-config';
@@ -243,5 +244,68 @@ describe('LinguiService.t$()', () => {
 
     expect(observed[observed.length - 1]).toBe('Bonjour');
     stop.destroy();
+  });
+});
+
+describe('LinguiService.t() — hashed-id lookup', () => {
+  it('resolves bare-string descriptors against hash-keyed catalogs (real `lingui compile` output)', async () => {
+    const source = 'Log in to your account';
+    const hash = generateMessageId(source);
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({
+          sourceLocale: 'en',
+          locales: ['en', 'da'],
+          loader: async (l) => ({
+            messages: { [hash]: l === 'da' ? 'Log ind på din konto' : source },
+          }),
+        }),
+      ],
+    });
+    const svc = TestBed.inject(LinguiService);
+    await svc.activate('en');
+    expect(svc.t(source)).toBe(source);
+    await svc.activate('da');
+    expect(svc.t(source)).toBe('Log ind på din konto');
+  });
+
+  it('honors MessageDescriptor with explicit `id` (already hashed by macro)', async () => {
+    const explicitId = 'login.button';
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({
+          sourceLocale: 'en',
+          locales: ['en', 'da'],
+          loader: async (l) => ({
+            messages: { [explicitId]: l === 'da' ? 'Log ind' : 'Log in' },
+          }),
+        }),
+      ],
+    });
+    const svc = TestBed.inject(LinguiService);
+    await svc.activate('da');
+    expect(svc.t({ id: explicitId, message: 'Log in' })).toBe('Log ind');
+  });
+
+  it('hashes id-less MessageDescriptor by its `message`', async () => {
+    const source = 'Sign up now';
+    const hash = generateMessageId(source);
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({
+          sourceLocale: 'en',
+          locales: ['en', 'da'],
+          loader: async (l) => ({
+            messages: { [hash]: l === 'da' ? 'Tilmeld dig nu' : source },
+          }),
+        }),
+      ],
+    });
+    const svc = TestBed.inject(LinguiService);
+    await svc.activate('da');
+    expect(svc.t({ message: source })).toBe('Tilmeld dig nu');
   });
 });

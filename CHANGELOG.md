@@ -9,7 +9,14 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-[Unreleased]: https://github.com/tocDK/lingui-angular/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/tocDK/lingui-angular/compare/v0.1.2...HEAD
+
+## [0.1.2] — 2026-06-04
+
+### Fixed
+- Runtime: `TPipe`, `TDirective`, and `LinguiService.t()` now hash bare-string source messages via `@lingui/message-utils generateMessageId` before catalog lookup, matching what `lingui compile --typescript` actually emits. Previously the runtime did `messages[sourceText]`, but the CLI keys bare-string entries by 6-char base64 hash — so every bare-string translation silently fell back to the English source. `$context` is now folded into the hash per Lingui's contract. Hand-forged source-keyed catalogs continue to resolve via a two-stage fallback (back-compat). Discovered by `tocDK/tivedo-app`'s FR-002 NFR-4 e2e smoke (clicking DA on `/admin/login` left every string in English).
+
+[0.1.2]: https://github.com/tocDK/lingui-angular/releases/tag/v0.1.2
 
 ## [0.1.1] — 2026-06-04
 

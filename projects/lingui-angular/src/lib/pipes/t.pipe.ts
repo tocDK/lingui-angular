@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform, inject } from '@angular/core';
+import { lookupBareString } from '../internal/lookup';
 import { LinguiService } from '../lingui.service';
 
 export interface TPipeOptions {
@@ -17,12 +18,20 @@ export class TPipe implements PipeTransform {
     this.lingui.locale();
 
     if (!options) {
-      return this.lingui.i18n._(message);
+      // Bare-string form: hash the source for lookup so we hit the catalog
+      // shape `lingui compile --typescript` produces.
+      return lookupBareString(this.lingui.i18n, message);
     }
 
-    const { $context: _context, $id, ...values } = options;
-    // Use the string overload: _(id, values, { message })
-    // $context is an extraction hint only; runtime lookup uses $id ?? message as the key.
-    return this.lingui.i18n._($id ?? message, values as Record<string, unknown>, { message });
+    const { $context, $id, ...values } = options;
+    if ($id) {
+      // Explicit id — caller has opted in (typically pre-hashed). Pass through.
+      return this.lingui.i18n._($id, values, { message });
+    }
+    // No explicit id: hash the source (with $context per Lingui's contract) so
+    // the runtime id matches `lingui compile --typescript` output. Parameterized
+    // messages aren't hashed by Lingui CLI, but the two-stage lookup in
+    // lookupBareString handles both shapes.
+    return lookupBareString(this.lingui.i18n, message, values, $context);
   }
 }

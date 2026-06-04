@@ -3,7 +3,7 @@ import { LinguiService, TPluralPipe } from '@tocdk/lingui-angular';
 import { formats } from '@lingui/core';
 
 @Component({
-  selector: 'lingui-example-plural',
+  selector: 'app-example-plural',
   standalone: true,
   imports: [TPluralPipe],
   template: `

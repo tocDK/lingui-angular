@@ -44,7 +44,7 @@ interface TocItem {
  *     `#reactivity-contract` land on the right `<section>`.
  */
 @Component({
-  selector: 'api-page',
+  selector: 'app-api-page',
   standalone: true,
   imports: [
     NgComponentOutlet,
@@ -76,21 +76,21 @@ interface TocItem {
               @for (section of content().overview.sections; track section.id) {
                 <section [id]="section.id">
                   <h2>{{ section.title }}</h2>
-                  <markdown-renderer [source]="section.markdown" />
+                  <app-markdown-renderer [source]="section.markdown" />
                 </section>
               }
               @for (key of content().overview.examples; track key) {
-                <lingui-example
+                <app-lingui-example
                   [sourceKey]="key"
                   [title]="exampleTitle(key)"
                 >
                   <ng-container
                     *ngComponentOutlet="exampleComponent(key)!"
                   />
-                </lingui-example>
+                </app-lingui-example>
               }
             </div>
-            <page-contents [items]="overviewItems()" />
+            <app-page-contents [items]="overviewItems()" />
           </div>
         </ng-template>
       </mat-tab>
@@ -103,12 +103,12 @@ interface TocItem {
                 <section [id]="section.id">
                   <h2>{{ section.title }}</h2>
                   @for (item of section.items; track item.id) {
-                    <api-item-card [item]="item" />
+                    <app-api-item-card [item]="item" />
                   }
                 </section>
               }
             </div>
-            <page-contents [items]="apiItems()" />
+            <app-page-contents [items]="apiItems()" />
           </div>
         </ng-template>
       </mat-tab>
@@ -118,7 +118,7 @@ interface TocItem {
           <div class="page-body">
             <div class="page-main">
               @for (ex of content().examples; track ex.key) {
-                <lingui-example
+                <app-lingui-example
                   [sourceKey]="ex.key"
                   [title]="ex.title"
                   [showCatalog]="ex.showCatalog ?? false"
@@ -127,10 +127,10 @@ interface TocItem {
                   <ng-container
                     *ngComponentOutlet="exampleComponent(ex.key)!"
                   />
-                </lingui-example>
+                </app-lingui-example>
               }
             </div>
-            <page-contents [items]="examplesItems()" />
+            <app-page-contents [items]="examplesItems()" />
           </div>
         </ng-template>
       </mat-tab>

@@ -8,7 +8,7 @@ const STATUS_LABELS: Record<string, string> & { other: string } = {
 };
 
 @Component({
-  selector: 'lingui-example-select',
+  selector: 'app-example-select',
   standalone: true,
   imports: [TSelectPipe],
   template: `

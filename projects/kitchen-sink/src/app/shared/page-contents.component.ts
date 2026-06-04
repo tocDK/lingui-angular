@@ -25,7 +25,7 @@ interface TocItem {
  * first DOM paint (`afterNextRender`). Cleanup runs on destroy.
  */
 @Component({
-  selector: 'page-contents',
+  selector: 'app-page-contents',
   standalone: true,
   imports: [RouterLink],
   template: `

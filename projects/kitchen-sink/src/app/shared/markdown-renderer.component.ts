@@ -14,7 +14,7 @@ import 'prismjs/components/prism-ini';
  * synchronously with GFM enabled and `breaks: false`.
  */
 @Component({
-  selector: 'markdown-renderer',
+  selector: 'app-markdown-renderer',
   standalone: true,
   template: `<div class="prose" [innerHTML]="html()"></div>`,
 })
@@ -28,7 +28,7 @@ export class MarkdownRendererComponent {
       async: false,
       gfm: true,
       breaks: false,
-    }) as string;
+    });
     const highlighted = applyPrismToHtml(raw);
     return this.sanitizer.bypassSecurityTrustHtml(highlighted);
   });

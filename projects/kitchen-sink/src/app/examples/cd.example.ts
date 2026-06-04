@@ -2,7 +2,7 @@ import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { LinguiService } from '@tocdk/lingui-angular';
 
 @Component({
-  selector: 'lingui-example-cd',
+  selector: 'app-example-cd',
   standalone: true,
   imports: [],
   template: `

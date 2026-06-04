@@ -12,13 +12,13 @@ import { MarkdownRendererComponent } from './markdown-renderer.component';
  * later iteration can light it up without re-authoring content.
  */
 @Component({
-  selector: 'api-item-card',
+  selector: 'app-api-item-card',
   standalone: true,
   imports: [MarkdownRendererComponent],
   template: `
     <article class="api-item" [id]="item().id">
       <code class="signature">{{ item().signature }}</code>
-      <markdown-renderer [source]="item().description" />
+      <app-markdown-renderer [source]="item().description" />
     </article>
   `,
 })

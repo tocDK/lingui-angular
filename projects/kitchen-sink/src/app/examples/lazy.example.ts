@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { LinguiService } from '@tocdk/lingui-angular';
 
 @Component({
-  selector: 'lingui-example-lazy',
+  selector: 'app-example-lazy',
   standalone: true,
   imports: [],
   template: `

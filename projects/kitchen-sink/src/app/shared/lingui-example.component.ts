@@ -25,7 +25,7 @@ import { SOURCES } from '../examples/sources.generated';
  * is set, the matching `.po` fragment, both Prism-highlighted.
  */
 @Component({
-  selector: 'lingui-example',
+  selector: 'app-lingui-example',
   standalone: true,
   imports: [MatCardModule, MatIconModule, MatButtonModule, MatSnackBarModule],
   template: `

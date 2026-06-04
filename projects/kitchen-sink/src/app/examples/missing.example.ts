@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { LinguiService, TPipe } from '@tocdk/lingui-angular';
 
 @Component({
-  selector: 'lingui-example-missing',
+  selector: 'app-example-missing',
   standalone: true,
   imports: [TPipe],
   template: `

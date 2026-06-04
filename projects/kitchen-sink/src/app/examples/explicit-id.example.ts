@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { LinguiService, TPipe } from '@tocdk/lingui-angular';
 
 @Component({
-  selector: 'lingui-example-explicit-id',
+  selector: 'app-example-explicit-id',
   standalone: true,
   imports: [TPipe],
   template: `

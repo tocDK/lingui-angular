@@ -6,7 +6,7 @@ import { LinguiService, TPipe } from '@tocdk/lingui-angular';
 // option in the | t pipe is an extraction hint only — it does not alter runtime
 // lookup. To demonstrate the concept, we show both pipe usage and direct i18n._().
 @Component({
-  selector: 'lingui-example-context',
+  selector: 'app-example-context',
   standalone: true,
   imports: [TPipe],
   template: `

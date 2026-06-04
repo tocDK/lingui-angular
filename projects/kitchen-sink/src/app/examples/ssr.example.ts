@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { DEFAULT_SSR_TRANSFER_KEY, LinguiService, TPipe } from '@tocdk/lingui-angular';
 
 @Component({
-  selector: 'lingui-example-ssr',
+  selector: 'app-example-ssr',
   standalone: true,
   imports: [TPipe],
   template: `

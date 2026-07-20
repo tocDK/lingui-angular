@@ -1,6 +1,7 @@
 import { Type } from '@angular/core';
 import { BasicExample } from './basic.example';
 import { ParamsExample } from './params.example';
+import { ParamsFallbackExample } from './params-fallback.example';
 import { PluralExample } from './plural.example';
 import { SelectExample } from './select.example';
 import { ContextExample } from './context.example';
@@ -13,6 +14,7 @@ import { MissingExample } from './missing.example';
 export const EXAMPLE_COMPONENTS: Record<string, Type<unknown>> = {
   basic: BasicExample,
   params: ParamsExample,
+  'params-fallback': ParamsFallbackExample,
   plural: PluralExample,
   select: SelectExample,
   context: ContextExample,

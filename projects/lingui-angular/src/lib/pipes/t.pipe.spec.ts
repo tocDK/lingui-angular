@@ -35,6 +35,13 @@ class HostWithContext {}
 })
 class HostHashedCatalog {}
 
+@Cmp({
+  standalone: true,
+  imports: [TPipe],
+  template: `<span data-test>{{ 'Support session — acting as {tier} on {account}' | t: { tier: 'admin', account: 'Acme Corp' } }}</span>`,
+})
+class HostFallbackWithValues {}
+
 describe('TPipe — plain', () => {
   it('returns translated text from a source-keyed (hand-forged) catalog — back-compat', async () => {
     // Back-compat path: hand-forged catalogs key entries by source text. The
@@ -137,5 +144,30 @@ describe('TPipe — placeholders + metadata', () => {
     await svc.activate('da');
     fixture.detectChanges();
     expect(fixture.debugElement.query(By.css('[data-test]')).nativeElement.textContent).toBe('Åbn');
+  });
+
+  it('interpolates a parameterized msgid fallback without the runtime compiler (issue #21)', async () => {
+    // The message is absent from the catalog (stage-3 fallback). We strip the
+    // runtime ICU compiler to mimic a production Angular build, where it is
+    // tree-shaken out. Pre-fix, the placeholders rendered literally.
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideLingui({
+          sourceLocale: 'en',
+          locales: ['en'],
+          loader: async () => ({ messages: {} }),
+        }),
+      ],
+    });
+    const fixture = TestBed.createComponent(HostFallbackWithValues);
+    const svc = TestBed.inject(LinguiService);
+    // Simulate the tree-shaken prod compiler.
+    (svc.i18n.setMessagesCompiler as (c: undefined) => unknown)(undefined);
+    await svc.activate('en');
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('[data-test]')).nativeElement.textContent).toBe(
+      'Support session — acting as admin on Acme Corp',
+    );
   });
 });

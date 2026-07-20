@@ -1,4 +1,5 @@
 import { I18n, MessageDescriptor } from '@lingui/core';
+import { compileMessage } from '@lingui/message-utils/compileMessage';
 import { generateMessageId } from '@lingui/message-utils/generateMessageId';
 
 /**
@@ -13,8 +14,10 @@ import { generateMessageId } from '@lingui/message-utils/generateMessageId';
  *    output.
  * 2. Back-compat: if the catalog is hand-forged with source-text keys
  *    (legacy specs, ad-hoc consumer catalogs), fall back to `messages[source]`.
- * 3. Otherwise let Lingui's `_()` produce the source-text fallback via
- *    `{ message: source }`.
+ * 3. Otherwise fall back to the source text. The source is pre-compiled via
+ *    `compileMessage` and passed as `{ message }`, so its `{placeholders}`
+ *    interpolate even in a production build where Lingui's runtime ICU
+ *    compiler is tree-shaken out (issue #21).
  *
  * @param i18n Active `I18n` instance.
  * @param message Bare-string source text (English source).
@@ -38,8 +41,24 @@ export function lookupBareString(
   if (message in i18n.messages) {
     return i18n._(message, values, { message });
   }
-  // Stage 3: nothing matches — let Lingui fall back to `message`.
-  return i18n._(hash, values, { message });
+  // Stage 3: nothing matches — fall back to `message`. Pre-compile the source
+  // into a token array so interpolation still works in a PRODUCTION build.
+  //
+  // Lingui's `I18n` registers its runtime ICU compiler only when
+  // `NODE_ENV !== 'production'`; a prod bundle tree-shakes that branch out, so
+  // `_()` has no compiler and returns a *string* fallback verbatim — leaving
+  // `{placeholders}` literal (issue #21). Passing an already-compiled token
+  // array as the fallback `message` means `_()` skips compilation entirely and
+  // hands the array straight to `interpolate`, in dev and prod alike. On a
+  // stage-1/2 hit this option is ignored (the catalog value wins), so this is
+  // a no-op for translated messages.
+  //
+  // `MessageOptions.message` is typed `string`, but at runtime `_()` accepts
+  // the same `UncompiledMessage | CompiledMessage` union its catalog values
+  // use; the cast only bridges that narrower public type.
+  return i18n._(hash, values, {
+    message: compileMessage(message) as unknown as string,
+  });
 }
 
 /**

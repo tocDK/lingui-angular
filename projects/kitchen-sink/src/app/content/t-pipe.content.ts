@@ -75,8 +75,31 @@ Two fixes:
    host CD.
         `,
       },
+      {
+        id: 'parameterized-fallback',
+        title: 'Parameterized msgid fallback',
+        markdown: `
+When a parameterized message has **no catalog entry** for the active locale,
+\`TPipe\` falls back to the source string — and still interpolates the
+placeholders:
+
+\`\`\`html
+<!-- 'Support session — acting as {tier} on {account}' is never extracted,
+     so it always falls back to source, in every locale. -->
+<p>{{ 'Support session — acting as {tier} on {account}'
+      | t: { tier: 'admin', account: 'Acme Corp' } }}</p>
+<!-- renders: Support session — acting as admin on Acme Corp -->
+\`\`\`
+
+This is the common shape when an app's **source locale ships no compiled
+catalog** — every \`| t\` resolves via the fallback path. The fallback source
+is pre-compiled internally, so interpolation works in **production** builds
+too, where Lingui's runtime ICU compiler is tree-shaken out (see
+[issue #21](https://github.com/tocDK/lingui-angular/issues/21)).
+        `,
+      },
     ],
-    examples: ['basic', 'params', 'context'],
+    examples: ['basic', 'params', 'params-fallback', 'context'],
   },
   api: {
     sections: [
@@ -117,6 +140,7 @@ Two fixes:
   examples: [
     { key: 'basic', title: 'Bare string', showCatalog: true },
     { key: 'params', title: 'Parameters', showCatalog: false },
+    { key: 'params-fallback', title: 'Parameters (msgid fallback)', showCatalog: false },
     { key: 'context', title: '$context', showCatalog: true },
     { key: 'explicit-id', title: '$id', showCatalog: true },
   ],

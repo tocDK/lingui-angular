@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -53,11 +53,7 @@ import { NAV_SECTIONS } from './shared/app-nav';
       <mat-sidenav-content>
         <mat-toolbar color="primary" class="app-toolbar">
           @if (isHandset()) {
-            <button
-              mat-icon-button
-              (click)="sidenav.toggle()"
-              aria-label="Toggle menu"
-            >
+            <button mat-icon-button (click)="sidenav.toggle()" aria-label="Toggle menu">
               <mat-icon>menu</mat-icon>
             </button>
           }
@@ -72,6 +68,7 @@ import { NAV_SECTIONS } from './shared/app-nav';
       </mat-sidenav-content>
     </mat-sidenav-container>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       .app-container {

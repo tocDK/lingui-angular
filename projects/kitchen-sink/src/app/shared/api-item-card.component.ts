@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 import { ApiItem } from './page-content.types';
 import { MarkdownRendererComponent } from './markdown-renderer.component';
@@ -15,6 +15,7 @@ import { MarkdownRendererComponent } from './markdown-renderer.component';
   selector: 'app-api-item-card',
   standalone: true,
   imports: [MarkdownRendererComponent],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <article class="api-item" [id]="item().id">
       <code class="signature">{{ item().signature }}</code>

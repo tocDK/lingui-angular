@@ -1,13 +1,18 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { LinguiService, TPipe } from '@tocdk/lingui-angular';
 
 @Component({
   selector: 'app-example-explicit-id',
   standalone: true,
   imports: [TPipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
-    <p>service (id descriptor): <strong>{{ welcomeTs() }}</strong></p>
-    <p>pipe (\$id option): <strong>{{ 'Welcome' | t: { $id: 'auth.welcome' } }}</strong></p>
+    <p>
+      service (id descriptor): <strong>{{ welcomeTs() }}</strong>
+    </p>
+    <p>
+      pipe ($id option): <strong>{{ 'Welcome' | t: { $id: 'auth.welcome' } }}</strong>
+    </p>
   `,
 })
 export class ExplicitIdExample {

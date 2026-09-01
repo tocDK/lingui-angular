@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { LinguiService, TPluralPipe } from '@tocdk/lingui-angular';
 import { formats } from '@lingui/core';
 
@@ -6,6 +6,7 @@ import { formats } from '@lingui/core';
   selector: 'app-example-plural',
   standalone: true,
   imports: [TPluralPipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <p style="font-size:.875rem;color:#666">
       Note: rule values (<code>'# item'</code>, <code>'# items'</code>) are literal English here —
@@ -14,12 +15,17 @@ import { formats } from '@lingui/core';
       plural-form string per locale (Lingui supports this via the macro's plural syntax).
     </p>
     <p>
-      <label>Count:
+      <label
+        >Count:
         <input type="number" [value]="count()" (input)="count.set(+$any($event.target).value)" />
       </label>
     </p>
-    <p>i18n runtime plural: <strong>{{ pluralTs() }}</strong></p>
-    <p>| tPlural pipe: <strong>{{ count() | tPlural: { one: '# item', other: '# items' } }}</strong></p>
+    <p>
+      i18n runtime plural: <strong>{{ pluralTs() }}</strong>
+    </p>
+    <p>
+      | tPlural pipe: <strong>{{ count() | tPlural: { one: '# item', other: '# items' } }}</strong>
+    </p>
   `,
 })
 export class PluralExample {

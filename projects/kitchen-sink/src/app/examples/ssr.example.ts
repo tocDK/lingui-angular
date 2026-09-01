@@ -1,4 +1,11 @@
-import { Component, TransferState, inject, makeStateKey, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  TransferState,
+  inject,
+  makeStateKey,
+  PLATFORM_ID,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { DEFAULT_SSR_TRANSFER_KEY, LinguiService, TPipe } from '@tocdk/lingui-angular';
 
@@ -6,12 +13,24 @@ import { DEFAULT_SSR_TRANSFER_KEY, LinguiService, TPipe } from '@tocdk/lingui-an
   selector: 'app-example-ssr',
   standalone: true,
   imports: [TPipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
-    <p>Rendered on: <strong>{{ where }}</strong></p>
-    <p>Active locale: <strong>{{ lingui.locale() }}</strong></p>
-    <p>Catalog hydrated from TransferState: <strong>{{ hydratedFromTransferState }}</strong></p>
+    <p>
+      Rendered on: <strong>{{ where }}</strong>
+    </p>
+    <p>
+      Active locale: <strong>{{ lingui.locale() }}</strong>
+    </p>
+    <p>
+      Catalog hydrated from TransferState: <strong>{{ hydratedFromTransferState }}</strong>
+    </p>
     <p>{{ 'Server-side rendering demo' | t }}</p>
-    <p><em>View page source — the translated content above is already in the HTML, no client-side fetch.</em></p>
+    <p>
+      <em
+        >View page source — the translated content above is already in the HTML, no client-side
+        fetch.</em
+      >
+    </p>
   `,
 })
 export class SsrExample {

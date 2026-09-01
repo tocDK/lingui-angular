@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { LinguiService, TSelectPipe } from '@tocdk/lingui-angular';
 
 const STATUS_LABELS: Record<string, string> & { other: string } = {
@@ -11,15 +11,17 @@ const STATUS_LABELS: Record<string, string> & { other: string } = {
   selector: 'app-example-select',
   standalone: true,
   imports: [TSelectPipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <p style="font-size:.875rem;color:#666">
       Note: rule values (<code>'Online'</code>, <code>'Idle'</code>, <code>'Offline'</code>) are
-      literal English here — they are not auto-translated by the pipe. This route demonstrates
-      the pipe's matching logic. To localize the rule values, wrap each one in its own
+      literal English here — they are not auto-translated by the pipe. This route demonstrates the
+      pipe's matching logic. To localize the rule values, wrap each one in its own
       <code>| t</code> call (e.g. <code>active: 'Online' | t</code>) and add the catalog entries.
     </p>
     <p>
-      <label>Status:
+      <label
+        >Status:
         <select #s (change)="status.set(s.value)">
           <option value="active">active</option>
           <option value="away">away</option>
@@ -27,8 +29,15 @@ const STATUS_LABELS: Record<string, string> & { other: string } = {
         </select>
       </label>
     </p>
-    <p>i18n runtime select: <strong>{{ selectTs() }}</strong></p>
-    <p>| tSelect pipe: <strong>{{ status() | tSelect: { active: 'Online', away: 'Idle', other: 'Offline' } }}</strong></p>
+    <p>
+      i18n runtime select: <strong>{{ selectTs() }}</strong>
+    </p>
+    <p>
+      | tSelect pipe:
+      <strong>{{
+        status() | tSelect: { active: 'Online', away: 'Idle', other: 'Offline' }
+      }}</strong>
+    </p>
   `,
 })
 export class SelectExample {

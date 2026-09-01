@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
 import Prism from 'prismjs';
@@ -16,6 +16,7 @@ import 'prismjs/components/prism-ini';
 @Component({
   selector: 'app-markdown-renderer',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `<div class="prose" [innerHTML]="html()"></div>`,
 })
 export class MarkdownRendererComponent {

@@ -12,7 +12,7 @@
   "bugs": "https://github.com/tocDK/lingui-angular/issues",
   "exports": {
     ".": {
-      "types": "./dist/lingui-angular/index.d.ts",
+      "types": "./dist/lingui-angular/types/tocdk-lingui-angular.d.ts",
       "default": "./dist/lingui-angular/fesm2022/tocdk-lingui-angular.mjs"
     },
     "./extractor": {
@@ -35,6 +35,12 @@
   },
   "dependencies": {
     "chokidar": "^4.0.3"
+  },
+  "overrides": {
+    "browserslist": "^4.28.8",
+    "vite": {
+      "esbuild": "^0.28.2"
+    }
   },
   "scripts": {
     "ng": "ng",
@@ -60,22 +66,22 @@
     "extract:check": "lingui compile --typescript && git diff --exit-code projects/kitchen-sink/src/locales"
   },
   "devDependencies": {
-    "@analogjs/vite-plugin-angular": "^1.22.5",
-    "@analogjs/vitest-angular": "^1.22.5",
-    "@angular/animations": "^20.3.30",
-    "@angular/build": "^20.3.30",
-    "@angular/cdk": "^20.2.14",
-    "@angular/cli": "^20.3.26",
-    "@angular/common": "^20.3.30",
-    "@angular/compiler": "^20.3.30",
-    "@angular/compiler-cli": "^20.3.30",
-    "@angular/core": "^20.3.30",
-    "@angular/forms": "^20.3.30",
-    "@angular/material": "^20.2.14",
-    "@angular/platform-browser": "^20.3.30",
-    "@angular/platform-server": "^20.3.30",
-    "@angular/router": "^20.3.30",
-    "@angular/ssr": "^20.3.26",
+    "@analogjs/vite-plugin-angular": "^2.7.1",
+    "@analogjs/vitest-angular": "^2.7.1",
+    "@angular/animations": "^22.1.4",
+    "@angular/build": "^22.1.6",
+    "@angular/cdk": "^22.1.4",
+    "@angular/cli": "^22.1.6",
+    "@angular/common": "^22.1.4",
+    "@angular/compiler": "^22.1.4",
+    "@angular/compiler-cli": "^22.1.4",
+    "@angular/core": "^22.1.4",
+    "@angular/forms": "^22.1.4",
+    "@angular/material": "^22.1.4",
+    "@angular/platform-browser": "^22.1.4",
+    "@angular/platform-server": "^22.1.4",
+    "@angular/router": "^22.1.4",
+    "@angular/ssr": "^22.1.6",
     "@lingui/cli": "^6.1.0",
     "@lingui/core": "^6.1.0",
     "@lingui/format-po": "^6.1.0",
@@ -84,20 +90,20 @@
     "@types/prismjs": "^1.26.0",
     "@typescript-eslint/eslint-plugin": "^8.60.0",
     "@typescript-eslint/parser": "^8.60.0",
-    "@vitest/coverage-v8": "^3.2.6",
-    "@vitest/ui": "^3.2.6",
-    "angular-eslint": "^20.7.0",
+    "@vitest/coverage-v8": "^4.1.11",
+    "@vitest/ui": "^4.1.11",
+    "angular-eslint": "^22.2.0",
     "eslint": "^9.39.4",
     "jsdom": "^25.0.1",
     "marked": "^14.0.0",
-    "ng-packagr": "^20.3.2",
+    "ng-packagr": "^22.1.1",
     "prettier": "^3.8.3",
     "prismjs": "^1.29.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.8.1",
     "tsx": "^4.22.4",
-    "typescript": "~5.8.0",
-    "vitest": "^3.2.6",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11",
     "zone.js": "^0.15.1"
   }
 }

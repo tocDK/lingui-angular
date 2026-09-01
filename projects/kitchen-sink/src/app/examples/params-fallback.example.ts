@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { LinguiService, TPipe } from '@tocdk/lingui-angular';
 
 /**
@@ -23,8 +23,11 @@ import { LinguiService, TPipe } from '@tocdk/lingui-angular';
   selector: 'app-example-params-fallback',
   standalone: true,
   imports: [TPipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
-    <p><em>Active locale: {{ lingui.locale() }}</em></p>
+    <p>
+      <em>Active locale: {{ lingui.locale() }}</em>
+    </p>
     <p>
       Translated (in catalog):
       <strong>{{ 'Hello, {name}!' | t: { name: name() } }}</strong>
@@ -32,8 +35,7 @@ import { LinguiService, TPipe } from '@tocdk/lingui-angular';
     <p>
       Msgid fallback (NOT in catalog):
       <strong>{{
-        'Support session — acting as {tier} on {account}'
-          | t: { tier: tier(), account: account() }
+        'Support session — acting as {tier} on {account}' | t: { tier: tier(), account: account() }
       }}</strong>
     </p>
   `,

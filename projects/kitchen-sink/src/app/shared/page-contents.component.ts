@@ -6,6 +6,7 @@ import {
   input,
   PLATFORM_ID,
   signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -28,6 +29,7 @@ interface TocItem {
   selector: 'app-page-contents',
   standalone: true,
   imports: [RouterLink],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <aside class="page-contents">
       <header>Page contents</header>
@@ -66,9 +68,7 @@ export class PageContentsComponent {
           const visible = entries
             .filter((e) => e.isIntersecting)
             .sort(
-              (a, b) =>
-                a.target.getBoundingClientRect().top -
-                b.target.getBoundingClientRect().top,
+              (a, b) => a.target.getBoundingClientRect().top - b.target.getBoundingClientRect().top,
             );
           if (visible.length > 0) {
             const id = (visible[0].target as HTMLElement).id;

@@ -1,14 +1,12 @@
-import { Component, inject } from '@angular/core';
-import {
-  MatButtonToggleModule,
-  MatButtonToggleChange,
-} from '@angular/material/button-toggle';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { MatButtonToggleModule, MatButtonToggleChange } from '@angular/material/button-toggle';
 import { LinguiService } from '@tocdk/lingui-angular';
 
 @Component({
   selector: 'app-locale-switcher',
   standalone: true,
   imports: [MatButtonToggleModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <mat-button-toggle-group
       [value]="lingui.locale()"

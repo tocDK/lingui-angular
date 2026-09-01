@@ -1,13 +1,18 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { LinguiService, TPipe } from '@tocdk/lingui-angular';
 
 @Component({
   selector: 'app-example-params',
   standalone: true,
   imports: [TPipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
-    <p>i18n with values: <strong>{{ greeting() }}</strong></p>
-    <p>Pipe with placeholder: <strong>{{ 'Hello, {name}' | t: { name: name() } }}</strong></p>
+    <p>
+      i18n with values: <strong>{{ greeting() }}</strong>
+    </p>
+    <p>
+      Pipe with placeholder: <strong>{{ 'Hello, {name}' | t: { name: name() } }}</strong>
+    </p>
   `,
 })
 export class ParamsExample {

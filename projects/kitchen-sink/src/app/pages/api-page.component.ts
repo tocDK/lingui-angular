@@ -6,6 +6,7 @@ import {
   input,
   signal,
   Type,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { ViewportScroller } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -55,9 +56,7 @@ interface TocItem {
   ],
   template: `
     <header class="page-header">
-      <span class="pill" [attr.data-pill]="content().pill">{{
-        content().pill
-      }}</span>
+      <span class="pill" [attr.data-pill]="content().pill">{{ content().pill }}</span>
       <h1>{{ content().title }}</h1>
     </header>
 
@@ -133,6 +132,7 @@ interface TocItem {
       </mat-tab>
     </mat-tab-group>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       :host {
@@ -298,9 +298,7 @@ export class ApiPageComponent {
    * fragment matches a tab name (overview/api/examples) we skip the scroll —
    * there's no in-page anchor to target.
    */
-  private scrollToFragmentAfterRender(
-    fragment: string | null | undefined,
-  ): void {
+  private scrollToFragmentAfterRender(fragment: string | null | undefined): void {
     if (!fragment) return;
     if (TAB_FRAGMENTS.includes(fragment as TabFragment)) return;
     afterNextRender(() => {

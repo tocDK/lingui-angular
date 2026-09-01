@@ -1,16 +1,19 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { LinguiService, TPipe } from '@tocdk/lingui-angular';
 
 @Component({
   selector: 'app-example-missing',
   standalone: true,
   imports: [TPipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <p>
-      The string below is intentionally absent from <code>da.po</code> — switch to DA
-      and watch it fall back to the English source string.
+      The string below is intentionally absent from <code>da.po</code> — switch to DA and watch it
+      fall back to the English source string.
     </p>
-    <p><em>Active locale: {{ lingui.locale() }}</em></p>
+    <p>
+      <em>Active locale: {{ lingui.locale() }}</em>
+    </p>
     <p>{{ 'this is deliberately untranslated' | t }}</p>
   `,
 })

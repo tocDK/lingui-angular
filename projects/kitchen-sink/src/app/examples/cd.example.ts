@@ -1,14 +1,24 @@
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  OnDestroy,
+  signal,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { LinguiService } from '@tocdk/lingui-angular';
 
 @Component({
   selector: 'app-example-cd',
   standalone: true,
   imports: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <p>Signal-driven change detection — updates every second without zone.js:</p>
     <p>{{ message() }}</p>
-    <p><em>Locale: {{ lingui.locale() }}</em></p>
+    <p>
+      <em>Locale: {{ lingui.locale() }}</em>
+    </p>
   `,
 })
 export class CdExample implements OnDestroy {

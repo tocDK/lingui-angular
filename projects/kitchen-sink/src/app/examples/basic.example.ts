@@ -1,12 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { LinguiService, TPipe, TDirective } from '@tocdk/lingui-angular';
 
 @Component({
   selector: 'app-example-basic',
   standalone: true,
   imports: [TPipe, TDirective],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
-    <p>LinguiService.t(): <strong>{{ greeting() }}</strong></p>
+    <p>
+      LinguiService.t(): <strong>{{ greeting() }}</strong>
+    </p>
     <h3>{{ 'Welcome' | t }}</h3>
     <button [t]="'About'"></button>
   `,

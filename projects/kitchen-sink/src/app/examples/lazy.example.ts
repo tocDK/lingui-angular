@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { LinguiService } from '@tocdk/lingui-angular';
 
 @Component({
   selector: 'app-example-lazy',
   standalone: true,
   imports: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <p>The Danish catalog is only fetched when this route is first visited.</p>
     @if (loaded()) {
@@ -12,7 +13,9 @@ import { LinguiService } from '@tocdk/lingui-angular';
     } @else {
       <p><em>Loading da catalog…</em></p>
     }
-    <p>Current locale: <strong>{{ lingui.locale() }}</strong></p>
+    <p>
+      Current locale: <strong>{{ lingui.locale() }}</strong>
+    </p>
   `,
 })
 export class LazyExample {

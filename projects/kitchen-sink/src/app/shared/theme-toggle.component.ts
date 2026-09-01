@@ -4,6 +4,7 @@ import {
   inject,
   PLATFORM_ID,
   signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,22 +21,19 @@ function readInitialMode(isBrowser: boolean): ThemeMode {
   } catch {
     /* ignore */
   }
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
 
 @Component({
   selector: 'app-theme-toggle',
   standalone: true,
   imports: [MatButtonModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <button
       mat-icon-button
       type="button"
-      [attr.aria-label]="
-        mode() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'
-      "
+      [attr.aria-label]="mode() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'"
       (click)="toggle()"
     >
       <mat-icon>{{ mode() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
@@ -50,10 +48,7 @@ export class ThemeToggleComponent {
     effect(() => {
       if (!this.isBrowser) return;
       const current = this.mode();
-      document.documentElement.classList.toggle(
-        'dark-theme',
-        current === 'dark',
-      );
+      document.documentElement.classList.toggle('dark-theme', current === 'dark');
       try {
         localStorage.setItem(STORAGE_KEY, current);
       } catch {

@@ -7,5 +7,13 @@
     "inlineSources": true,
     "types": []
   },
-  "exclude": ["**/*.spec.ts", "src/test.ts", "extractor/**"]
+  "exclude": ["**/*.spec.ts", "src/test.ts", "extractor/**"],
+  "angularCompilerOptions": {
+    "extendedDiagnostics": {
+      "checks": {
+        "nullishCoalescingNotNullable": "suppress",
+        "optionalChainNotNullable": "suppress"
+      }
+    }
+  }
 }

@@ -6,6 +6,7 @@ import {
   linkedSignal,
   PLATFORM_ID,
   Type,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { NgComponentOutlet, isPlatformBrowser } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -45,6 +46,7 @@ import { LocaleSwitcherComponent } from './locale-switcher.component';
     LocaleSwitcherComponent,
   ],
   providers: [...provideExampleLingui()],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <mat-card appearance="outlined" class="example-card" [id]="sourceKey()">
       <div class="example-header">
@@ -107,9 +109,7 @@ export class LinguiExampleComponent {
   private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
   private readonly snackbar = inject(MatSnackBar);
 
-  protected readonly expanded = linkedSignal<boolean>(() =>
-    this.defaultExpanded(),
-  );
+  protected readonly expanded = linkedSignal<boolean>(() => this.defaultExpanded());
 
   protected readonly sources = computed(() => SOURCES[this.sourceKey()]);
 

@@ -1,4 +1,8 @@
-import { bootstrapApplication, provideClientHydration } from '@angular/platform-browser';
+import {
+  bootstrapApplication,
+  provideClientHydration,
+  withNoIncrementalHydration,
+} from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
@@ -11,7 +15,7 @@ bootstrapApplication(AppComponent, {
     provideZonelessChangeDetection(),
     provideAnimationsAsync(),
     provideRouter(routes, withComponentInputBinding()),
-    provideClientHydration(),
+    provideClientHydration(withNoIncrementalHydration()),
     provideLingui({
       sourceLocale: 'en',
       locales: ['en', 'da'],
@@ -20,8 +24,10 @@ bootstrapApplication(AppComponent, {
         // Angular CLI's esbuild does not support .po imports out of the box.
         // Run `npx lingui compile --typescript` before building.
         switch (locale) {
-          case 'da': return import('./locales/da');
-          default:   return import('./locales/en');
+          case 'da':
+            return import('./locales/da');
+          default:
+            return import('./locales/en');
         }
       },
     }),

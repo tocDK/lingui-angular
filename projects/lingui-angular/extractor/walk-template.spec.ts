@@ -224,3 +224,81 @@ describe('walkTemplate — chained pipes', () => {
     expect(result.warnings[0].reason).toMatch(/string literal/);
   });
 });
+
+describe('walkTemplate — bound-attribute complex expressions', () => {
+  // The bound-attribute walker recurses through every expression shape it may
+  // encounter (conditionals, binaries, arrays, maps, calls, member reads, …).
+  // Angular's parser doesn't allow a `t` pipe nested inside these sub-expressions,
+  // so the correct behaviour is to traverse them safely and neither extract nor
+  // warn. These guard against the walker false-positiving on ordinary bindings.
+  it.each([
+    ['conditional', `<div [x]="cond ? 'A' : 'B'"></div>`],
+    ['binary', `<div [x]="a + b"></div>`],
+    ['prefix-not', `<div [x]="!flag"></div>`],
+    ['non-null assert', `<div [x]="val!"></div>`],
+    ['literal array', `<div [x]="[a, b]"></div>`],
+    ['literal map', `<div [x]="{ k: v, j: w }"></div>`],
+    ['call', `<div [x]="fn(a, b)"></div>`],
+    ['property read', `<div [x]="obj.prop.deep"></div>`],
+    ['keyed read', `<div [x]="obj[key]"></div>`],
+    ['safe property read', `<div [x]="obj?.prop"></div>`],
+    ['safe call', `<div [x]="obj?.fn(a)"></div>`],
+    ['safe keyed read', `<div [x]="obj?.[key]"></div>`],
+  ])('traverses a %s binding without extracting or warning', (_label, source) => {
+    const result = walkTemplate(source, 'complex.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings).toEqual([]);
+  });
+
+  it('ignores a bare interpolation expression that is not a pipe', () => {
+    const result = walkTemplate(`<p>{{ userName }}</p>`, 'bare.html');
+    expect(result.calls).toEqual([]);
+    expect(result.warnings).toEqual([]);
+  });
+});
+
+describe('walkTemplate — control-flow sub-blocks', () => {
+  it('recurses into a @for @empty block', () => {
+    const source = `@for (i of items; track i) { <p>{{ 'Row' | t }}</p> } @empty { <p>{{ 'None' | t }}</p> }`;
+    const { calls, warnings } = walkTemplate(source, 'for-empty.html');
+    expect(warnings).toEqual([]);
+    expect(calls.map((c) => c.message).sort()).toEqual(['None', 'Row']);
+  });
+
+  it('recurses into @defer / @placeholder / @loading / @error blocks', () => {
+    const source =
+      `@defer { <p>{{ 'Main' | t }}</p> } ` +
+      `@placeholder { <p>{{ 'Placeholder' | t }}</p> } ` +
+      `@loading { <p>{{ 'Loading' | t }}</p> } ` +
+      `@error { <p>{{ 'Error' | t }}</p> }`;
+    const { calls, warnings } = walkTemplate(source, 'defer.html');
+    expect(warnings).toEqual([]);
+    expect(calls.map((c) => c.message).sort()).toEqual(['Error', 'Loading', 'Main', 'Placeholder']);
+  });
+});
+
+describe('walkTemplate — object-spread keys (Angular 21+ literal-map AST)', () => {
+  it('warns when a tPlural rules map contains a spread key', () => {
+    const source = `<p>{{ count | tPlural: { ...base, other: '# items' } }}</p>`;
+    const { calls, warnings } = walkTemplate(source, 'plural-spread.html');
+    expect(calls).toEqual([]);
+    expect(warnings.length).toBe(1);
+    expect(warnings[0].reason).toMatch(/string literals/);
+  });
+
+  it('skips a spread key in a t options map but still extracts $context / $id', () => {
+    const source = `<p>{{ 'Hi' | t: { ...opts, $context: 'greeting', $id: 'greet.id' } }}</p>`;
+    const { calls, warnings } = walkTemplate(source, 'opt-spread.html');
+    expect(warnings).toEqual([]);
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ kind: 't', message: 'Hi', context: 'greeting', id: 'greet.id' });
+  });
+});
+
+describe('walkTemplate — tSelect shim emit', () => {
+  it('emits a select() shim call for a valid | tSelect', () => {
+    const source = `<p>{{ status | tSelect: { active: 'On', other: 'Off' } }}</p>`;
+    const out = walkTemplate(source, 'select-emit.html').emit();
+    expect(out).toContain(`void select('', { active: "On", other: "Off" });`);
+  });
+});

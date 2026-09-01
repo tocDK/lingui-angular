@@ -126,8 +126,8 @@ class LinguiService {
     config = inject(LINGUI_CONFIG);
     transferState = inject(TransferState, { optional: true });
     ssrKey = inject(LINGUI_SSR_KEY);
-    _locale = signal(this.config.sourceLocale, ...(ngDevMode ? [{ debugName: "_locale" }] : []));
-    _loading = signal(false, ...(ngDevMode ? [{ debugName: "_loading" }] : []));
+    _locale = signal(this.config.sourceLocale, ...(ngDevMode ? [{ debugName: "_locale" }] : /* istanbul ignore next */ []));
+    _loading = signal(false, ...(ngDevMode ? [{ debugName: "_loading" }] : /* istanbul ignore next */ []));
     loaded = new Set();
     _inflight = null;
     locale = this._locale.asReadonly();
@@ -233,10 +233,10 @@ class LinguiService {
             return def;
         return null;
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: LinguiService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: LinguiService });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: LinguiService, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+    static ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: LinguiService });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: LinguiService, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: LinguiService, decorators: [{
             type: Injectable
         }], ctorParameters: () => [] });
 
@@ -269,10 +269,10 @@ class TPipe {
         // lookupBareString handles both shapes.
         return lookupBareString(this.lingui.i18n, message, values, $context);
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: TPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
-    static ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "20.3.23", ngImport: i0, type: TPipe, isStandalone: true, name: "t", pure: false });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: TPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+    static ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "21.2.22", ngImport: i0, type: TPipe, isStandalone: true, name: "t", pure: false });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: TPipe, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: TPipe, decorators: [{
             type: Pipe,
             args: [{ name: 't', standalone: true, pure: false }]
         }] });
@@ -290,10 +290,10 @@ class TPluralPipe {
         const form = formats.plural([locale], false, count, rules);
         return form.replace(/#/g, String(count));
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: TPluralPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
-    static ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "20.3.23", ngImport: i0, type: TPluralPipe, isStandalone: true, name: "tPlural", pure: false });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: TPluralPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+    static ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "21.2.22", ngImport: i0, type: TPluralPipe, isStandalone: true, name: "tPlural", pure: false });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: TPluralPipe, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: TPluralPipe, decorators: [{
             type: Pipe,
             args: [{ name: 'tPlural', standalone: true, pure: false }]
         }] });
@@ -309,17 +309,17 @@ class TSelectPipe {
         const match = Object.prototype.hasOwnProperty.call(rules, value) ? rules[value] : undefined;
         return match ?? rules.other;
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: TSelectPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
-    static ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "20.3.23", ngImport: i0, type: TSelectPipe, isStandalone: true, name: "tSelect", pure: false });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: TSelectPipe, deps: [], target: i0.ɵɵFactoryTarget.Pipe });
+    static ɵpipe = i0.ɵɵngDeclarePipe({ minVersion: "14.0.0", version: "21.2.22", ngImport: i0, type: TSelectPipe, isStandalone: true, name: "tSelect", pure: false });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: TSelectPipe, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: TSelectPipe, decorators: [{
             type: Pipe,
             args: [{ name: 'tSelect', standalone: true, pure: false }]
         }] });
 
 // eslint-disable-next-line @angular-eslint/directive-selector
 class TDirective {
-    t = input.required(...(ngDevMode ? [{ debugName: "t" }] : []));
+    t = input.required(...(ngDevMode ? [{ debugName: "t" }] : /* istanbul ignore next */ []));
     host = inject(ElementRef);
     lingui = inject(LinguiService);
     injector = inject(Injector);
@@ -336,10 +336,10 @@ class TDirective {
             });
         });
     }
-    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: TDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "20.3.23", type: TDirective, isStandalone: true, selector: "[t]", inputs: { t: { classPropertyName: "t", publicName: "t", isSignal: true, isRequired: true, transformFunction: null } }, ngImport: i0 });
+    static ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: TDirective, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+    static ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "17.1.0", version: "21.2.22", type: TDirective, isStandalone: true, selector: "[t]", inputs: { t: { classPropertyName: "t", publicName: "t", isSignal: true, isRequired: true, transformFunction: null } }, ngImport: i0 });
 }
-i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.3.23", ngImport: i0, type: TDirective, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.2.22", ngImport: i0, type: TDirective, decorators: [{
             type: Directive,
             args: [{ selector: '[t]', standalone: true }]
         }], propDecorators: { t: [{ type: i0.Input, args: [{ isSignal: true, alias: "t", required: true }] }] } });

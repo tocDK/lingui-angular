@@ -137,6 +137,13 @@ function handleRulesPipe(pipe, kind, filePath, line, column, calls, warnings) {
     }
     const rules = {};
     rulesArg.keys.forEach((keyNode, idx) => {
+        // @angular/compiler 21 added object-spread in template literal maps: `keys` is
+        // now (LiteralMapPropertyKey | LiteralMapSpreadKey)[]. A spread key (`{ ...x }`,
+        // `kind: 'spread'`) has no static `.key`, so it can't be extracted — skip it and
+        // let the captured-count guard below warn. `kind` is absent on the v20 AST, so
+        // `!== 'spread'` also keeps the extractor working under a v20 compiler at runtime.
+        if (keyNode.kind === 'spread')
+            return;
         const val = rulesArg.values[idx];
         if (val instanceof LiteralPrimitive && typeof val.value === 'string') {
             rules[keyNode.key] = val.value;
@@ -286,6 +293,12 @@ function parseOptionsArg(arg) {
     let id;
     let hasUnsupportedValues = false;
     arg.keys.forEach((keyNode, idx) => {
+        // Skip object-spread keys (Angular 21+ literal-map AST): a `{ ...x }` entry
+        // carries no static `.key`. Treated like any other unrecognized key — ignored
+        // (the message text and explicit $context/$id still extract). `kind` is absent
+        // on the v20 AST, so this is a no-op there.
+        if (keyNode.kind === 'spread')
+            return;
         const key = keyNode.key;
         const val = arg.values[idx];
         if (key === '$context' || key === '$id') {

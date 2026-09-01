@@ -1,7 +1,12 @@
-import { bootstrapApplication } from '@angular/platform-browser';
+import { bootstrapApplication, BootstrapContext } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideServerRendering } from '@angular/ssr';
-import { APP_INITIALIZER, TransferState, inject, provideZonelessChangeDetection } from '@angular/core';
+import {
+  APP_INITIALIZER,
+  TransferState,
+  inject,
+  provideZonelessChangeDetection,
+} from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
   DEFAULT_SSR_TRANSFER_KEY,
@@ -12,40 +17,46 @@ import {
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 
-const bootstrap = () =>
-  bootstrapApplication(AppComponent, {
-    providers: [
-      provideZonelessChangeDetection(),
-      provideAnimationsAsync(),
-      provideRouter(routes, withComponentInputBinding()),
-      provideServerRendering(),
-      provideLingui({
-        sourceLocale: 'en',
-        locales: ['en', 'da'],
-        loader: async (locale) => {
-          switch (locale) {
-            case 'da': return import('./locales/da');
-            default:   return import('./locales/en');
-          }
+const bootstrap = (context: BootstrapContext) =>
+  bootstrapApplication(
+    AppComponent,
+    {
+      providers: [
+        provideZonelessChangeDetection(),
+        provideAnimationsAsync(),
+        provideRouter(routes, withComponentInputBinding()),
+        provideServerRendering(),
+        provideLingui({
+          sourceLocale: 'en',
+          locales: ['en', 'da'],
+          loader: async (locale) => {
+            switch (locale) {
+              case 'da':
+                return import('./locales/da');
+              default:
+                return import('./locales/en');
+            }
+          },
+        }),
+        // After bootstrap settles (initial detect-locale activation), serialize
+        // the active catalog into TransferState so the client can hydrate
+        // without re-fetching.
+        {
+          provide: APP_INITIALIZER,
+          multi: true,
+          useFactory: () => {
+            const lingui = inject(LinguiService);
+            const state = inject(TransferState);
+            return async () => {
+              // Yield once so any constructor-initiated activate() can settle.
+              await Promise.resolve();
+              serializeCatalog(lingui.i18n, state, DEFAULT_SSR_TRANSFER_KEY);
+            };
+          },
         },
-      }),
-      // After bootstrap settles (initial detect-locale activation), serialize
-      // the active catalog into TransferState so the client can hydrate
-      // without re-fetching.
-      {
-        provide: APP_INITIALIZER,
-        multi: true,
-        useFactory: () => {
-          const lingui = inject(LinguiService);
-          const state = inject(TransferState);
-          return async () => {
-            // Yield once so any constructor-initiated activate() can settle.
-            await Promise.resolve();
-            serializeCatalog(lingui.i18n, state, DEFAULT_SSR_TRANSFER_KEY);
-          };
-        },
-      },
-    ],
-  });
+      ],
+    },
+    context,
+  );
 
 export default bootstrap;

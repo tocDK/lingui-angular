@@ -76,7 +76,18 @@ export function walkTemplate(source: string, filePath: string): WalkResult {
         walk(node.children);
         if (node.empty) walk(node.empty.children);
       } else if (node instanceof TmplAstSwitchBlock) {
-        for (const c of node.cases) walk(c.children);
+        // @angular/compiler 21 renamed the @switch AST: `SwitchBlock.groups`
+        // (SwitchBlockCaseGroup[], each with `.children`) replaced v20's `.cases`. This
+        // extractor is built against v20 types, but consumers may run v21 (e.g. tivedo-app on
+        // 21.2.19), where `.cases` is undefined and `for (const c of node.cases)` threw
+        // `node.cases is not iterable`, aborting extraction on every @switch template (#1161).
+        // Descend into whichever the running compiler exposes; both carry the @case/@default
+        // bodies on `.children`.
+        const sw = node as unknown as {
+          groups?: readonly { children: readonly TmplAstNode[] }[];
+          cases?: readonly { children: readonly TmplAstNode[] }[];
+        };
+        for (const g of sw.groups ?? sw.cases ?? []) walk(g.children);
       } else if (node instanceof TmplAstDeferredBlock) {
         walk(node.children);
         if (node.placeholder) walk(node.placeholder.children);

@@ -1,8 +1,8 @@
 {
   "name": "@tocdk/lingui-angular",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
-  "description": "Angular 20+ bindings for Lingui — write English, extract via AST, ship PO catalogs.",
+  "description": "Angular 20+ bindings for Lingui \u2014 write English, extract via AST, ship PO catalogs.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tocDK/lingui-angular.git"
@@ -13,8 +13,12 @@
     "@lingui/core": "^6.0.0"
   },
   "peerDependenciesMeta": {
-    "@angular/compiler": { "optional": true },
-    "@lingui/cli":       { "optional": true }
+    "@angular/compiler": {
+      "optional": true
+    },
+    "@lingui/cli": {
+      "optional": true
+    }
   },
   "sideEffects": false
 }
